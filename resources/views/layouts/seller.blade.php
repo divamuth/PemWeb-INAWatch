@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Seller Dashboard') - Ina Watch</title>
+    <title>Seller Dashboard - Ina Watch</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -21,17 +21,17 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <div class="bg-gradient-to-b from-pastel-blue-200 via-pastel-purple-200 to-pastel-pink-200 p-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 w-auto">
+    <div class="bg-gradient-to-b from-pastel-blue-200 via-pastel-purple-200 to-pastel-pink-200 p-6">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <div class="flex items-center ml-12">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-16 w-auto">
             </div>
             <div class="flex gap-4">
-                <a href="/seller/dashboard">
-                    <img src="{{ asset('images/home.png') }}" alt="Home" class="h-7 w-7">
+                <a href="/seller/dashboard" class="hover:scale-110 transition-transform">
+                    <img src="{{ asset('images/home.png') }}" alt="Home" class="h-8 w-8">
                 </a>
-                <a href="/seller/chatseller">
-                    <img src="{{ asset('images/chat.png') }}" alt="Chat" class="h-7 w-7">
+                <a href="/seller/chatseller" class="hover:scale-110 transition-transform">
+                    <img src="{{ asset('images/chat.png') }}" alt="Chat" class="h-8 w-8">
                 </a>
             </div>
         </div>
@@ -42,16 +42,27 @@
         <div class="w-64 bg-white min-h-screen border-[3px] border-[#CBA3F6] rounded-tr-[30px]">
             <div class="p-6 flex justify-center">
                 <nav class="space-y-3 w-full">
-                    <a href="/seller/dashboard" class="inline-flex justify-center items-center w-full px-4 py-3 bg-[#A3BEF6] text-white rounded-[30px] font-bold shadow-md">
+                    <a href="/seller/dashboard"
+                       class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
+                       {{ request()->is('seller/dashboard') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
                         Dashboard
                     </a>
-                    <a href="/seller/profile" class="inline-flex justify-center items-center w-full px-4 py-3 text-white bg-[#CFDEFE] hover:bg-[#A3BEF6] rounded-[30px] transition-all font-bold shadow-md">
+
+                    <a href="/seller/profile"
+                       class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
+                       {{ request()->is('seller/profile') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
                         Store Profile
                     </a>
-                    <a href="/seller/stock" class="inline-flex justify-center items-center w-full px-4 py-3 text-white bg-[#CFDEFE] hover:bg-[#A3BEF6] rounded-[30px] transition-all font-bold shadow-md">
+
+                    <a href="/seller/stock"
+                       class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
+                       {{ request()->is('seller/stock') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
                         Stock
                     </a>
-                    <a href="/seller/order" class="inline-flex justify-center items-center w-full px-4 py-3 text-white bg-[#CFDEFE] hover:bg-[#A3BEF6] rounded-[30px] transition-all font-bold shadow-md">
+
+                    <a href="/seller/order"
+                       class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
+                       {{ request()->is('seller/order') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
                         Order
                     </a>
                 </nav>
