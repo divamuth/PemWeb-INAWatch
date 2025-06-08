@@ -2,17 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SellerController;
+use App\Http\Controllers\UserController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and assigned to the "web"
-| middleware group. Make something great!
-|
-*/
+//Redirect root to user dashboard
+Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
 
 // Redirect root to seller dashboard
 Route::get('/', function () {
