@@ -63,4 +63,8 @@ class UserController extends Controller
     public function address (Request $request) {
         return view('user.address');
     }
+
+    public function order (Request $request) {
+        return view('user.order');
+    }
 }
