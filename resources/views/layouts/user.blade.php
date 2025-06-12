@@ -41,17 +41,24 @@
 
             <!-- Icons -->
             <div class="flex items-center gap-6">
+                <!-- Home -->
                 <a href="{{ route('user.dashboard') }}" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/home.png') }}" alt="Home" class="h-8 w-8">
+                    <img src="{{ asset(request()->is('user/dashboard') || request()->is('user') ? 'images/home-black.png' : 'images/home-white.png') }}" alt="Home" class="h-8 w-8">
                 </a>
+
+                <!-- Chat -->
                 <a href="/user/chat" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/chat.png') }}" alt="Chat" class="h-8 w-8">
+                    <img src="{{ asset(request()->is('user/chat') ? 'images/chat-black.png' : 'images/chat-white.png') }}" alt="Chat" class="h-8 w-8">
                 </a>
+
+                <!-- Cart -->
                 <a href="/user/cart" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/cart.png') }}" alt="Cart" class="h-8 w-8">
+                    <img src="{{ asset(request()->is('user/cart') ? 'images/cart-black.png' : 'images/cart-white.png') }}" alt="Cart" class="h-8 w-8">
                 </a>
+
+                <!-- Profile -->
                 <a href="/user/profile" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/profile.png') }}" alt="Profile" class="h-8 w-8">
+                    <img src="{{ asset(request()->is('user/profile') ? 'images/profile-black.png' : 'images/profile-gray.png') }}" alt="Profile" class="h-8 w-8">
                 </a>
             </div>
         </div>

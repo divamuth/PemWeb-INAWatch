@@ -33,11 +33,31 @@
 
                 <!-- Kuantitas -->
                 <h3 class="text-md font-semibold text-gray-800 mb-2">Kuantitas:</h3>
-                <div class="flex items-center gap-4 mb-6">
-                    <button class="w-8 h-8 bg-gray-200 rounded-full text-lg font-bold">-</button>
-                    <span class="text-lg">1</span>
-                    <button class="w-8 h-8 bg-gray-200 rounded-full text-lg font-bold">+</button>
+                <div class="flex items-center space-x-4 mt-4">
+                    <button id="decrease" class="w-10 h-10 rounded-full bg-gray-200 text-xl font-bold hover:bg-gray-300">-</button>
+                    <span id="quantity" class="text-xl font-semibold">1</span>
+                    <button id="increase" class="w-10 h-10 rounded-full bg-gray-200 text-xl font-bold hover:bg-gray-300">+</button>
                 </div>
+
+                <script>
+                    const quantityEl = document.getElementById('quantity');
+                    const increaseBtn = document.getElementById('increase');
+                    const decreaseBtn = document.getElementById('decrease');
+
+                    let quantity = 1;
+
+                    increaseBtn.addEventListener('click', () => {
+                        quantity++;
+                        quantityEl.textContent = quantity;
+                    });
+
+                    decreaseBtn.addEventListener('click', () => {
+                        if (quantity > 1) {
+                            quantity--;
+                            quantityEl.textContent = quantity;
+                        }
+                    });
+                </script>
 
                 <!-- Total & Button -->
                 <div class="mb-4 mt-60">
