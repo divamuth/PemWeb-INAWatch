@@ -12,9 +12,20 @@ Route::get('/', function () {
     return redirect('/seller/dashboard');
 });
 
+// Menampilkan form login
+Route::get('/login', [\App\Http\Controllers\UserController::class, 'showLogin'])->name('login');
+
+// Menangani form login
+Route::post('/login', [\App\Http\Controllers\UserController::class, 'login'])->name('login.submit');
+
+// Logout
+Route::get('/logout', [\App\Http\Controllers\UserController::class, 'logout'])->name('logout');
+
 // Seller routes
 Route::prefix('seller')->group(function () {
-    Route::get('/dashboard', [SellerController::class, 'index'])->name('seller.dashboard');
+    Route::get('/dashboard', [SellerController::class, 'index'])
+        ->middleware('auth')
+        ->name('seller.dashboard');
     Route::get('/profile', [SellerController::class, 'profile'])->name('seller.profile');
     Route::get('/stock', [SellerController::class, 'stock'])->name('seller.stock');
     Route::get('/order', [SellerController::class, 'order'])->name('seller.order');
