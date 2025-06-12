@@ -58,7 +58,7 @@
 
                 <!-- Profile -->
                 <a href="/user/profile" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset(request()->is('user/profile') ? 'images/profile-black.png' : 'images/profile-gray.png') }}" alt="Profile" class="h-8 w-8">
+                    <img src="{{ asset(request()->is('user/profile') ? 'images/profile-black.png' : 'images/profile-white.png') }}" alt="Profile" class="h-8 w-8">
                 </a>
             </div>
         </div>
