@@ -44,6 +44,10 @@ class UserController extends Controller
         return back()->with('error', 'Email atau password salah.');
     }
 
+    public function register() {
+        return view('register');
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();

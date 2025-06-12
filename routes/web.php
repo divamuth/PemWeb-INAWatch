@@ -14,9 +14,11 @@ Route::get('/', function () {
 
 // Menampilkan form login
 Route::get('/login', [\App\Http\Controllers\UserController::class, 'showLogin'])->name('login');
+Route::get('/register', [UserController::class, 'register'])->name('register');
 
 // Menangani form login
 Route::post('/login', [\App\Http\Controllers\UserController::class, 'login'])->name('login.submit');
+Route::post('/register', [UserController::class, 'store'])->name('register.submit');
 
 // Logout
 Route::get('/logout', [\App\Http\Controllers\UserController::class, 'logout'])->name('logout');

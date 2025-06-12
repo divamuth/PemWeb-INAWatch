@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>@yield('title', 'User Login - Ina Watch')</title>
+    <title>@yield('title', 'User Register - Ina Watch')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
@@ -35,16 +35,7 @@
             <!-- Icons -->
             <div class="flex items-center gap-6">
                 <a href="{{ route('register') }}" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/home.png') }}" alt="Home" class="h-8 w-8">
-                </a>
-                <a href="/user/chat" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/chat.png') }}" alt="Chat" class="h-8 w-8">
-                </a>
-                <a href="/user/cart" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/cart.png') }}" alt="Cart" class="h-8 w-8">
-                </a>
-                <a href="/user/profile" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/profile.png') }}" alt="Profile" class="h-8 w-8">
+                    <p>LOGIN</p>
                 </a>
             </div>
         </div>
@@ -60,7 +51,7 @@
         <!-- Right Side (Form Login) -->
         <div class="flex-1 flex justify-center items-center">
             <div class="form-login bg-white shadow-lg rounded-[30px] p-10 max-w-[400px] min-h-[550px]">
-                <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+                <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
 
                 <!-- Input Username -->
                 <input 
