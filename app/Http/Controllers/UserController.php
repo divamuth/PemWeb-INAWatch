@@ -59,4 +59,8 @@ class UserController extends Controller
     public function profile (Request $request) {
         return view('user.profile');
     }
+
+    public function address (Request $request) {
+        return view('user.address');
+    }
 }
