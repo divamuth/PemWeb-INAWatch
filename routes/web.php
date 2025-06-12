@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 
 //Redirect root to user dashboard
 Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
+Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
 
 // Redirect root to seller dashboard
 Route::get('/', function () {
