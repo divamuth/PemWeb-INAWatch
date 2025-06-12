@@ -32,12 +32,6 @@
             <div class="flex items-center">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-16 w-auto">
             </div>
-            <!-- Icons -->
-            <div class="flex items-center gap-6">
-                <a href="{{ route('register') }}" class="hover:scale-110 transition-transform">
-                    <p>LOGIN</p>
-                </a>
-            </div>
         </div>
     </div>
 
@@ -53,10 +47,17 @@
             <div class="form-login bg-white shadow-lg rounded-[30px] p-10 max-w-[400px] min-h-[550px]">
                 <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
 
+                <!-- Input Email -->
+                <input 
+                    type="email" 
+                    placeholder="Email" 
+                    class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
+                />
+
                 <!-- Input Username -->
                 <input 
                     type="text" 
-                    placeholder="Username or Email" 
+                    placeholder="Username" 
                     class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
                 />
 
@@ -67,17 +68,24 @@
                     class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
                 />
 
-                <!-- Login Button -->
+                <!-- Input Password -->
+                <input 
+                    type="password" 
+                    placeholder="Confirm password" 
+                    class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
+                />
+
+                <!-- Register Button -->
                 <button 
                     class="w-full bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 rounded-full transition"
                 >
-                    LOG IN
+                    REGISTER
                 </button>
 
                 <!-- Register Link -->
-                <p class="text-center mt-4 text-sm text-red-600">
-                    Don't have an account? 
-                    <a href="/register" class="underline hover:text-red-700">Register here.</a>
+                <p class="text-center mt-4 text-sm">
+                    Already have an account?
+                    <a href="/login" class="underline text-purple-800 hover:text-red-700">Login here.</a>
                 </p>
             </div>
         </div>

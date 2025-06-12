@@ -32,21 +32,6 @@
             <div class="flex items-center">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-16 w-auto">
             </div>
-            <!-- Icons -->
-            <div class="flex items-center gap-6">
-                <a href="{{ route('register') }}" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/home.png') }}" alt="Home" class="h-8 w-8">
-                </a>
-                <a href="/user/chat" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/chat.png') }}" alt="Chat" class="h-8 w-8">
-                </a>
-                <a href="/user/cart" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/cart.png') }}" alt="Cart" class="h-8 w-8">
-                </a>
-                <a href="/user/profile" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/profile.png') }}" alt="Profile" class="h-8 w-8">
-                </a>
-            </div>
         </div>
     </div>
 
@@ -84,9 +69,9 @@
                 </button>
 
                 <!-- Register Link -->
-                <p class="text-center mt-4 text-sm text-red-600">
+                <p class="text-center mt-4 text-sm">
                     Don't have an account? 
-                    <a href="/register" class="underline hover:text-red-700">Register here.</a>
+                    <a href="/register" class="underline text-purple-800 hover:text-red-700">Register here.</a>
                 </p>
             </div>
         </div>
