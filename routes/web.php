@@ -7,12 +7,10 @@ use App\Http\Controllers\UserController;
 //Redirect root to user dashboard
 Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
 Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
-<<<<<<< Updated upstream
 Route::get('/user/address', [UserController::class, 'address'])->name('user.address');
 Route::get('/user/order', [UserController::class, 'order'])->name('user.order');
-=======
 Route::get('/user/cart', [UserController::class, 'cart'])->name('user.cart');
->>>>>>> Stashed changes
+Route::get('/user/custom', [UserController::class, 'custom'])->name('user.custom');
 
 // Redirect root to seller dashboard
 Route::get('/', function () {

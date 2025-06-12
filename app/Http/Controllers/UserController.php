@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Product;
+use Laravel\Ui\Presets\React;
 
 class UserController extends Controller
 {
@@ -59,6 +60,11 @@ class UserController extends Controller
     public function cart(Request $request)
     {
         return view('user.cart');
+    }
+
+    public function custom(Request $request)
+    {
+        return view('user.custom');
     }
 
     public function profile (Request $request) {
