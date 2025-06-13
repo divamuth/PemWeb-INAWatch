@@ -9,11 +9,6 @@ Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.
 Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
 Route::get('/user/cart', [UserController::class, 'cart'])->name('user.cart');
 
-Route::get('/user/address', [UserController::class, 'address'])->name('user.address');
-Route::get('/user/order', [UserController::class, 'order'])->name('user.order');
-Route::get('/user/cart', [UserController::class, 'cart'])->name('user.cart');
-Route::get('/user/custom', [UserController::class, 'custom'])->name('user.custom');
-
 // Redirect root to seller dashboard
 Route::get('/', function () {
     return redirect('/seller/dashboard');
