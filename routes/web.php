@@ -31,7 +31,7 @@ Route::get('/logout', [\App\Http\Controllers\UserController::class, 'logout'])->
 // Seller routes
 Route::prefix('seller')->group(function () {
     Route::get('/dashboard', [SellerController::class, 'index'])
-        ->middleware('auth')
+        // ->middleware('auth')
         ->name('seller.dashboard');
     Route::get('/profile', [SellerController::class, 'profile'])->name('seller.profile');
     Route::get('/stock', [SellerController::class, 'stock'])->name('seller.stock');

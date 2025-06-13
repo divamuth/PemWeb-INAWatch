@@ -51,4 +51,8 @@ class SellerController extends Controller
     {
         return response()->json(Product::getStockStats());
     }
+
+    public function profile () {
+        return view('seller.profile');
+    }
 }
