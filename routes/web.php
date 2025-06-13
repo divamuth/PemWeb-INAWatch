@@ -8,7 +8,6 @@ use App\Http\Controllers\UserController;
 Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
 Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
 Route::get('/user/cart', [UserController::class, 'cart'])->name('user.cart');
-
 Route::get('/user/address', [UserController::class, 'address'])->name('user.address');
 Route::get('/user/order', [UserController::class, 'order'])->name('user.order');
 Route::get('/user/cart', [UserController::class, 'cart'])->name('user.cart');
@@ -36,11 +35,12 @@ Route::prefix('seller')->group(function () {
         // ->middleware('auth')
         ->name('seller.dashboard');
     Route::get('/profile', [SellerController::class, 'profile'])->name('seller.profile');
+    // Route::get('/seller/stock', [SellerController::class, 'stock'])->name('seller.stock');
     Route::get('/stock', [SellerController::class, 'stock'])->name('seller.stock');
     Route::get('/order', [SellerController::class, 'order'])->name('seller.order');
-    Route::post('/update-order-status', [SellerController::class, 'updateOrderStatus'])->name('seller.updateOrderStatus');
-    Route::get('/seller/stock', [SellerController::class, 'stock'])->name('seller.stock');  
-    Route::get('/seller/stock-data', [SellerController::class, 'getStockData'])->name('seller.stock.data');
+    Route::post('/update-order-status', [SellerController::class, 'updateOrderStatus'])->name('seller.updateOrderStatus');  
+    Route::get('/stock-data', [SellerController::class, 'getStockData'])->name('seller.stock.data');
+    Route::get('/stock/edit', [SellerController::class, 'edit'])->name('seller.stock.edit');
 
 });
 

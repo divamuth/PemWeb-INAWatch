@@ -49,6 +49,12 @@ class SellerController extends Controller
         return response()->json($stockData);
     }
 
+    // public function edit()
+    // {
+    //     $product = Product::first();
+    //     return view('seller.edit', compact('product'));
+    // }
+
     public function order()
     {
     $orders = Order::with('products')->get(); 
