@@ -36,6 +36,19 @@ class SellerController extends Controller
         return view('seller.dashboard', compact('orderStats', 'stockStats'));
     }
 
+    public function stock()
+    {
+        $products = Product::all();
+
+        return view('seller.stock', compact('products'));
+    }
+
+    public function getStockData()
+    {
+        $stockData = Product::select('name', 'stock', 'sold')->get();
+        return response()->json($stockData);
+    }
+
     public function order()
     {
     $orders = Order::with('products')->get(); 
