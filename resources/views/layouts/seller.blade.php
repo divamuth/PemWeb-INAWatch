@@ -28,10 +28,10 @@
             </div>
             <div class="flex gap-4">
                 <a href="/seller/dashboard" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/home.png') }}" alt="Home" class="h-8 w-8">
+                    <img src="{{ asset(request()->is('seller/dashboard') || request()->is('seller') ? 'images/home-black.png' : 'images/home-white.png') }}" alt="Home" class="h-8 w-8">
                 </a>
                 <a href="/seller/chatseller" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset('images/chat.png') }}" alt="Chat" class="h-8 w-8">
+                    <img src="{{ asset(request()->is('seller/chatseller') || request()->is('seller') ? 'images/chat-black.png' : 'images/chat-white.png') }}" alt="Home" class="h-8 w-8">
                 </a>
             </div>
         </div>
@@ -44,25 +44,25 @@
                 <nav class="space-y-3 w-full">
                     <a href="/seller/dashboard"
                        class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
-                       {{ request()->is('seller/dashboard') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
+                       {{ request()->is('seller/dashboard') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                         Dashboard
                     </a>
 
                     <a href="/seller/profile"
                        class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
-                       {{ request()->is('seller/profile') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
+                       {{ request()->is('seller/profile') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                         Store Profile
                     </a>
 
                     <a href="/seller/stock"
                        class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
-                       {{ request()->is('seller/stock') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
+                       {{ request()->is('seller/stock') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                         Stock
                     </a>
 
                     <a href="/seller/order"
                        class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
-                       {{ request()->is('seller/order') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
+                       {{ request()->is('seller/order') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                         Order
                     </a>
                 </nav>

@@ -78,4 +78,5 @@ class UserController extends Controller
     public function order (Request $request) {
         return view('user.order');
     }
+
 }

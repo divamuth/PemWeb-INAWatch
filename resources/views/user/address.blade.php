@@ -7,19 +7,19 @@
             <nav class="space-y-3 w-full">
                 <a href="/user/profile"
                    class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all text-xl
-                   {{ request()->is('user/profile') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
+                   {{ request()->is('user/profile') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                     Profile
                 </a>
 
                 <a href="/user/address"
                    class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all text-xl
-                   {{ request()->is('user/address') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
+                   {{ request()->is('user/address') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                     Address
                 </a>
 
                 <a href="/user/order"
                    class="inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all text-xl
-                   {{ request()->is('user/order') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }}">
+                   {{ request()->is('user/order') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                     Order
                 </a>
             </nav>
@@ -34,7 +34,7 @@
 
         <div class="flex-1 p-8 bg-white shadow-lg rounded-[30px] m-4">
             <div class="flex justify-end pr-5">
-                <button type="button" onclick="openPopup()" class="px-6 py-2 bg-[#CBA3F6] text-white rounded-full hover:bg-purple-400 font-bold">
+                <button type="button" onclick="openPopup()" class="px-6 py-2 bg-[#CBA3F6] text-white rounded-full hover:bg-purple-400 font-bold hover:scale-105 transform transition-all duration-200">
                     + Add New Addresses
                 </button>
             </div>
@@ -45,7 +45,7 @@
                 <p class="text-gray-400">Wisma Butter Jalan Jalan Ke Gunung Kidul (Cakep)</p>
                 <p class="text-gray-400">JEBRES, KOTA SURAKARTA (SOLO), JAWA TENGAH, ID, 66666</p>
             </div>
-            <div class="bg-pastel-pink-200 m-4 border border-gray-300 rounded-[30px] p-5 text-md">
+            <div class="bg-white m-4 border border-gray-300 rounded-[30px] p-5 text-md">
                 <strong>Kos</strong><br>
                 <strong>Kezia</strong>
                 <p class="font-semibold">081208120812</p>
@@ -93,10 +93,10 @@
                 <input type="number" name="post" id="post" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required>
             </div>
             <div class="flex justify-end space-x-4">
-                <button type="button" onclick="closePopup()" class="px-6 py-2 mt-8 bg-gray-400 text-white rounded-full hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700 font-bold">
+                <button type="button" onclick="closePopup()" class="px-6 py-2 mt-8 bg-gray-400 text-white rounded-full hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700 font-bold hover:scale-105 transform transition-all duration-200">
                     Cancel
                 </button>
-                <button type="submit" class="px-6 py-2 mt-8 bg-[#A3A4F6] text-white rounded-full hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-bold">
+                <button type="submit" class="px-6 py-2 mt-8 bg-[#A3A4F6] text-white rounded-full hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-bold hover:scale-105 transform transition-all duration-200">
                     Add
                 </button>
             </div>
