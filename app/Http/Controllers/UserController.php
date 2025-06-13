@@ -62,13 +62,6 @@ class UserController extends Controller
         return view('user.cart');
     }
 
-//     public function custom(Request $request)
-//     {
-//         return view('user.custom');
-//     }
-
-// =======
-
     public function profile (Request $request) {
         return view('user.profile');
     }
