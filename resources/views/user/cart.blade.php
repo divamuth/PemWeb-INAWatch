@@ -50,7 +50,7 @@
             </div>
             <div class="flex items-center gap-6">
                 <span class="text-md text-gray-700">Total (1 product): <strong>Rp 214.900</strong></span>
-                <a href="#" class="bg-black text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-800">
+                <a href="{{ route('user.payment') }}" class="bg-black text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-800">
                     Checkout
                 </a>
             </div>

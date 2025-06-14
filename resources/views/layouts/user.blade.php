@@ -19,7 +19,7 @@
         }
     </script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-[#f6f6ff] min-h-screen">
     <!-- Header -->
     <div class="bg-gradient-to-b from-pastel-blue-200 via-pastel-purple-200 to-pastel-pink-200 h-[120px] w-full shadow-lg rounded-bl-[30px] rounded-br-[30px]">
         <div class="flex items-center justify-between h-full px-12 max-w-[1440px] mx-auto">

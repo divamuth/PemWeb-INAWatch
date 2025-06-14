@@ -12,6 +12,7 @@ Route::get('/user/address', [UserController::class, 'address'])->name('user.addr
 Route::get('/user/order', [UserController::class, 'order'])->name('user.order');
 Route::get('/user/chatuser', [UserController::class, 'chatuser'])->name('user.chatuser');
 Route::get('/user/custom', [UserController::class, 'custom'])->name('user.custom');
+Route::get('/payment', [UserController::class, 'payment'])->name('user.payment');
 
 // Redirect root to seller dashboard
 Route::get('/', function () {

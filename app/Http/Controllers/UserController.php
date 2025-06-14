@@ -85,4 +85,9 @@ class UserController extends Controller
     {
         return view('user.chatuser');
     }
+
+    public function payment()
+    {
+        return view('user.payment');
+    }
 }
