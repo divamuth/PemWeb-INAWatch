@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
+use App\Models\Chat;
 
 class SellerController extends Controller
 {
@@ -73,5 +75,27 @@ class SellerController extends Controller
 
     public function profile () {
         return view('seller.profile');
+    }
+
+    public function chat(Request $request)
+    {
+        $userList = User::all();
+        $activeUserId = $request->query('user');
+        $activeUser = $activeUserId ? User::find($activeUserId) : null;
+
+        $messages = $activeUser ? Chat::where('user_id', $activeUserId)->get() : [];
+
+        return view('seller.chatseller', compact('userList', 'activeUser', 'messages'));
+    }
+
+    public function sendChat(Request $request, $userId)
+    {
+        Chat::create([
+            'user_id' => $userId,
+            'sender' => 'seller',
+            'message' => $request->input('message')
+        ]);
+
+        return redirect()->route('seller.chatseller', ['user' => $userId]);
     }
 }

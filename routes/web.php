@@ -31,17 +31,15 @@ Route::get('/logout', [\App\Http\Controllers\UserController::class, 'logout'])->
 
 // Seller routes
 Route::prefix('seller')->group(function () {
-    Route::get('/dashboard', [SellerController::class, 'index'])
-        // ->middleware('auth')
-        ->name('seller.dashboard');
+    Route::get('/dashboard', [SellerController::class, 'index'])->name('seller.dashboard');
     Route::get('/profile', [SellerController::class, 'profile'])->name('seller.profile');
-    // Route::get('/seller/stock', [SellerController::class, 'stock'])->name('seller.stock');
     Route::get('/stock', [SellerController::class, 'stock'])->name('seller.stock');
     Route::get('/order', [SellerController::class, 'order'])->name('seller.order');
     Route::post('/update-order-status', [SellerController::class, 'updateOrderStatus'])->name('seller.updateOrderStatus');  
     Route::get('/stock-data', [SellerController::class, 'getStockData'])->name('seller.stock.data');
     Route::get('/stock/edit', [SellerController::class, 'edit'])->name('seller.stock.edit');
-
+    Route::get('/chatseller', [SellerController::class, 'chat'])->name('seller.chatseller');
+    Route::post('/chatseller/{user}/send', [SellerController::class, 'sendChat'])->name('seller.chatseller.send');
 });
 
 // API routes
