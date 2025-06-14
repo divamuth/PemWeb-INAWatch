@@ -287,13 +287,14 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
 
     <!-- Camera Modal -->
-    <div id="cameraModal" class="camera-modal" style="display: none;">
-        <div class="camera-container">
+    <div id="cameraModal" class="camera-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style="display: none;">
+        <div class="camera-container bg-white rounded-lg p-6 w-[500px]">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold">Camera</h3>
                 <button onclick="closeCamera()" class="text-gray-500 hover:text-gray-700">
@@ -303,13 +304,13 @@
                     </svg>
                 </button>
             </div>
-            <video id="cameraFeed" class="camera-feed" autoplay playsinline></video>
+            <video id="cameraFeed" class="camera-feed w-full rounded-lg" autoplay playsinline></video>
             <canvas id="photoCanvas" style="display: none;"></canvas>
-            <div class="camera-controls">
-                <button onclick="capturePhoto()" class="capture-btn">
+            <div class="camera-controls flex justify-between mt-4">
+                <button onclick="capturePhoto()" class="capture-btn bg-pastel-purple-200 text-white px-4 py-2 rounded-lg">
                     📸 Capture Photo
                 </button>
-                <button onclick="closeCamera()" class="cancel-btn">
+                <button onclick="closeCamera()" class="cancel-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">
                     ❌ Cancel
                 </button>
             </div>

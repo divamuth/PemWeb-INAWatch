@@ -47,8 +47,8 @@
                 </a>
 
                 <!-- Chat -->
-                <a href="/user/chat" class="hover:scale-110 transition-transform">
-                    <img src="{{ asset(request()->is('user/chat') ? 'images/chat-black.png' : 'images/chat-white.png') }}" alt="Chat" class="h-8 w-8">
+                <a href="{{ route('user.chatuser') }}" class="hover:scale-110 transition-transform">
+                    <img src="{{ asset(request()->is('user/chatuser') ? 'images/chat-black.png' : 'images/chat-white.png') }}" alt="Chat" class="h-8 w-8">
                 </a>
 
                 <!-- Cart -->

@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Product;
-use Laravel\Ui\Presets\React;
 
 class UserController extends Controller
 {
@@ -15,7 +14,6 @@ class UserController extends Controller
     {
         $search = $request->query('search');
         
-        // Fetch products, filter by search if provided
         $products = Product::query()
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', '%' . $search . '%');
@@ -45,7 +43,8 @@ class UserController extends Controller
         return back()->with('error', 'Email atau password salah.');
     }
 
-    public function register() {
+    public function register()
+    {
         return view('register');
     }
 
@@ -62,20 +61,28 @@ class UserController extends Controller
         return view('user.cart');
     }
 
-        public function custom(Request $request)
+    public function custom(Request $request)
     {
         return view('user.custom');
     }
 
-    public function profile (Request $request) {
+    public function profile(Request $request)
+    {
         return view('user.profile');
     }
 
-    public function address (Request $request) {
+    public function address(Request $request)
+    {
         return view('user.address');
     }
 
-    public function order (Request $request) {
+    public function order(Request $request)
+    {
         return view('user.order');
+    }
+
+    public function chatuser(Request $request)
+    {
+        return view('user.chatuser');
     }
 }
