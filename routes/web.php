@@ -38,6 +38,7 @@ Route::prefix('seller')->group(function () {
     Route::post('/update-order-status', [SellerController::class, 'updateOrderStatus'])->name('seller.updateOrderStatus');  
     Route::get('/stock-data', [SellerController::class, 'getStockData'])->name('seller.stock.data');
     Route::get('/stock/edit', [SellerController::class, 'edit'])->name('seller.stock.edit');
+    Route::get('/seller/stock-stats', [App\Http\Controllers\SellerController::class, 'getStockStats'])->name('seller.getStockStats');
     Route::get('/chatseller', [SellerController::class, 'chat'])->name('seller.chatseller');
     Route::post('/chatseller/{user}/send', [SellerController::class, 'sendChat'])->name('seller.chatseller.send');
 });
