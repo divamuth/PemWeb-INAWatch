@@ -43,7 +43,8 @@
         <div class="flex items-center justify-between max-w-7xl mx-auto">
             <div class="flex items-center">
                 <!-- Hamburger Menu for Mobile -->
-                <button id="sidebarToggle" class="md:hidden mr-4 focus:outline-none">
+                <button id="
+                Toggle" class="md:hidden mr-4 focus:outline-none">
                     <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
@@ -68,8 +69,8 @@
     </div>
 
     <div class="flex">
-        <!-- Sidebar -->
-        <div id="sidebar" class="w-64 bg-white min-h-screen border-[3px] border-[#CBA3F6] rounded-tr-[30px] transform md:translate-x-0 -translate-x-full md:static fixed top-0 left-0 h-full transition-transform duration-300 ease-in-out z-50">
+       <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-white border-t-[3px] border-r-[3px] border-[#CBA3F6] rounded-tr-[30px] transform md:translate-x-0 -translate-x-full md:static fixed top-0 bottom-0 left-0 transition-transform duration-300 ease-in-out z-50">
             <div class="p-6 flex justify-between items-center">
                 <h2 id="sidebarTitle" class="font-bold text-lg">Menu</h2>
                 <!-- Sidebar Toggle Button for Desktop -->
@@ -81,23 +82,23 @@
             </div>
             <nav class="space-y-3 w-full px-6">
                 <a href="/seller/dashboard"
-                   class="nav-item inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
-                   {{ request()->is('seller/dashboard') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
+                class="nav-item inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
+                {{ request()->is('seller/dashboard') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                     <span class="nav-text">Dashboard</span>
                 </a>
                 <a href="/seller/profile"
-                   class="nav-item inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
-                   {{ request()->is('seller/profile') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
+                class="nav-item inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
+                {{ request()->is('seller/profile') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                     <span class="nav-text">Store Profile</span>
                 </a>
                 <a href="/seller/stock"
-                   class="nav-item inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
-                   {{ request()->is('seller/stock') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
+                class="nav-item inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
+                {{ request()->is('seller/stock') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                     <span class="nav-text">Stock</span>
                 </a>
                 <a href="/seller/order"
-                   class="nav-item inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
-                   {{ request()->is('seller/order') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
+                class="nav-item inline-flex justify-center items-center w-full px-4 py-3 text-white rounded-[30px] font-bold shadow-md transition-all
+                {{ request()->is('seller/order') ? 'bg-[#A3BEF6]' : 'bg-[#CFDEFE] hover:bg-[#A3BEF6]' }} hover:scale-105 transform transition-all duration-200">
                     <span class="nav-text">Order</span>
                 </a>
             </nav>

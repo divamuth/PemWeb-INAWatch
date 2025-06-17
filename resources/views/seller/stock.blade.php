@@ -225,33 +225,55 @@ body {
     }
 
     function openEditPopup(productId) {
-        fetch(`/seller/stock/${productId}`)
-            .then(response => response.json())
+        console.log('Opening edit popup for product ID:', productId);
+        fetch(`/seller/stock/${productId}`, {
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                return response.json();
+            })
             .then(product => {
+                console.log('Product data:', product);
+                if (!product || !product.product_name) throw new Error('Invalid product data');
+
                 document.getElementById('editForm').action = `/seller/stock/${product.id}`;
+                console.log('Form action set to:', document.getElementById('editForm').action);
+
                 document.getElementById('editProductName').value = product.product_name;
                 document.getElementById('editVariation').value = product.variation;
                 document.getElementById('editSale').value = product.sale;
                 document.getElementById('editPrice').value = product.price;
                 document.getElementById('editStock').value = product.stock;
                 
+                // Set image
                 const imageUrl = product.image ? 
                     (product.image.startsWith('images/') ? 
-                        `{{ asset('') }}${product.image}` : 
-                        `{{ asset('storage/') }}${product.image}`) : 
-                    "{{ asset('images/contoh2.png') }}";
+                        `/images/${product.image.split('images/')[1]}` : 
+                        `/storage/${product.image}`) : 
+                    "/images/contoh2.png";
+                console.log('Image URL:', imageUrl);
                 document.getElementById('editPreviewImage').src = imageUrl;
-                
-                document.getElementById('editPopup').classList.remove('hidden');
+
+                // Show popup
+                const editPopup = document.getElementById('editPopup');
+                console.log('editPopup element:', editPopup);
+                if (!editPopup) throw new Error('editPopup element not found');
+                editPopup.classList.remove('hidden');
+                console.log('editPopup classes:', editPopup.className);
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error loading product data');
+                alert('Error loading product data' + error.message);
             });
     }
 
     function openDeletePopup(productId, productName, variation, imageUrl) {
-        document.getElementById('deleteForm').action = `/seller/stock/${productId}`;
+        document.getElementById('deleteForm').action = "{{ route('stock.destroy', ':id') }}".replace(':id', productId);
         document.getElementById('deleteProductName').textContent = productName;
         document.getElementById('deleteProductVariation').textContent = `Variasi: ${variation}`;
         document.getElementById('deleteProductImage').src = imageUrl;

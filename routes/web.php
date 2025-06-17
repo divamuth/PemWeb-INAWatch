@@ -45,10 +45,9 @@ Route::prefix('seller')->group(function () {
     // Stock routes - Complete CRUD
     Route::get('/stock', [SellerController::class, 'stock'])->name('seller.stock');
     Route::get('/stock/create', [SellerController::class, 'create'])->name('stock.create');
-    Route::post('/stock', [SellerController::class, 'store'])->name('stock.store');
+    Route::post('/stock', [ProductController::class, 'store'])->name('stock.store');
     Route::get('/stock/{id}/edit', [SellerController::class, 'edit'])->name('stock.edit');
     Route::put('/stock/{id}', [SellerController::class, 'update'])->name('stock.update');
-    Route::delete('/stock/{id}', [SellerController::class, 'destroy'])->name('stock.destroy');
     
     // Stock data and stats
     Route::get('/stock-data', [SellerController::class, 'getStockData'])->name('seller.stock.data');
@@ -66,6 +65,11 @@ Route::prefix('seller')->group(function () {
     Route::get('/profile', [StoreController::class, 'edit'])->name('seller.profile');
     Route::post('/profile', [StoreController::class, 'update'])->name('seller.profile.update');
 });
+
+// Route untuk ProductController
+Route::get('/seller/stock/{id}', [ProductController::class, 'show'])->name('stock.show');
+Route::put('/seller/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
+Route::delete('/seller/stock/{id}', [ProductController::class, 'destroy'])->name('stock.destroy');
 
 // API routes
 Route::get('/api/order-stats', [SellerController::class, 'getOrderStats']);

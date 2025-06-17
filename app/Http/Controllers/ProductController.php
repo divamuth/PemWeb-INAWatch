@@ -79,10 +79,6 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-        
-        if ($product->is_permanent) {
-            return redirect()->back()->with('error', 'This product cannot be deleted!');
-        }
 
         // Delete image if exists
         if ($product->image && $product->image !== 'images/contoh2.png') {
