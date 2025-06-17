@@ -15,10 +15,12 @@ class Product extends Model
         'sale',
         'price',
         'stock',
-        'image'
+        'image',
+        'is_permanent'
     ];
 
     protected $casts = [
-        'stock' => 'integer'
+        'stock' => 'integer',
+        'is_permanent' => 'boolean'
     ];
 }
