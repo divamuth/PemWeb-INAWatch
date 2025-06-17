@@ -12,13 +12,20 @@ body {
 <div class="flex w-full">
     <!-- Konten utama -->
     <div class="flex-1 bg-white rounded-2xl shadow p-4 m-4">
+        <!-- Success Message -->
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <!-- Page Header -->
         <div class="mb-6 flex justify-between items-center">
             <div class="bg-[#FFB3F8] text-white px-10 py-3 rounded-[30px] inline-block font-bold text-lg shadow-lg">
                 Stock
             </div>
-            <button type="button" onclick="openPopup('addPopup')" class="bg-[#FFB3F8] text-white px-10 py-3 rounded-[30px] inline-block font-bold text-lg shadow-lg">
-                <a href="">Add Product</a>
+            <button type="button" onclick="openAddPopup()" class="bg-[#FFB3F8] text-white px-10 py-3 rounded-[30px] inline-block font-bold text-lg shadow-lg">
+                Add Product
             </button>
         </div>
 
@@ -34,171 +41,238 @@ body {
         </div>
 
         <!-- ROW -->
-        @for ($i = 0; $i < 4; $i++)
+        @forelse($products as $product)
         <div class="border-b px-6 py-4">
             <div class="grid grid-cols-12 gap-4 items-center">
                 <div class="col-span-4 flex items-center gap-2">
-                <img src="{{ asset('images/contoh2.png') }}" alt="Jam" class="h-40 rounded-md">
-                <div>
-                    <div class="font-semibold">INA Watch Jam Tangan Kayu Jati Seri Rara Ngigel</div>
-                    <div class="text-gray-500 text-xs">Varian: L. Abu Polos</div>
+                    <img src="{{ $product->image ? (str_starts_with($product->image, 'images/') ? asset($product->image) : asset('storage/'.$product->image)) : asset('images/contoh2.png') }}" 
+                         alt="{{ $product->product_name }}" class="h-40 rounded-md object-cover">
+                    <div>
+                        <div class="font-semibold">{{ $product->product_name }}</div>
+                        <div class="text-gray-500 text-xs">Varian: {{ $product->variation }}</div>
+                    </div>
                 </div>
-                </div>
-                <div class="col-span-2 text-center">3,6K</div>
-                <div class="col-span-2 text-center">Rp 214.900</div>
-                <div class="col-span-3 text-center">38</div>
+                <div class="col-span-2 text-center">{{ $product->sale }}</div>
+                <div class="col-span-2 text-center">{{ $product->price }}</div>
+                <div class="col-span-3 text-center">{{ $product->stock }}</div>
                 <div class="col-span-1 text-center text-red-500">
-                    <button type="button" onclick="openPopup('editPopup')" class="mr-2 underline">
+                    <button type="button" onclick="openEditPopup({{ $product->id }})" class="mr-2 underline">
                         Edit
                     </button>
                     <br>
-                    <button type="button" onclick="openPopup('deletePopup')" class="mr-2 underline">
+                    <button type="button" onclick="openDeletePopup({{ $product->id }}, '{{ $product->product_name }}', '{{ $product->variation }}', '{{ $product->image ? (str_starts_with($product->image, 'images/') ? asset($product->image) : asset('storage/'.$product->image)) : asset('images/contoh2.png') }}')" class="mr-2 underline">
                         Delete
                     </button>
                 </div>
             </div>
         </div>
-        @endfor
+        @empty
+        <div class="text-center py-8 text-gray-500">
+            No products found. Add your first product!
+        </div>
+        @endforelse
     </div>
 
-    {{-- Pop Up --}}
+    {{-- Add Pop Up --}}
     <div id="addPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-[#F6F6FF] rounded-[30px] w-2/3 py-8 px-16 max-h-[90vh] overflow-y-aut">
+        <div class="bg-[#F6F6FF] rounded-[30px] w-2/3 py-8 px-16 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <strong class="text-xl">Add</strong>
-                <button type="submit" form="editForm" class="px-10 py-3 mt-8 bg-[#A3A4F6] text-white rounded-full hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-bold hover:scale-105 transform transition-all duration-200">Save</button>
+                <strong class="text-xl">Add Product</strong>
+                <button type="button" onclick="closePopup('addPopup')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
-            <form action="" method="POST">
-            <div class="flex gap-8">
+            <form id="addForm" action="{{ route('stock.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <!-- Gambar Produk -->
-                <div class="bg-white rounded-xl border p-4 flex justify-center items-center relative w-1/3">
-                    <img src="{{ asset('images/contoh2.png') }}" alt="Product Image" class="max-h-96 object-contain" />
-                    <div class="absolute bottom-2 right-2 flex space-x-2">
-                        <button class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </button>
-                        <button class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
+                <div class="flex gap-8">
+                    <!-- Gambar Produk -->
+                    <div class="bg-white rounded-xl border p-4 flex justify-center items-center relative w-1/3">
+                        <img id="addPreviewImage" src="{{ asset('images/contoh2.png') }}" alt="Product Image" class="max-h-96 object-contain" />
+                        <input type="file" id="addImageInput" name="image" accept="image/*" class="hidden" onchange="previewImage('addImageInput', 'addPreviewImage')">
+                        <div class="absolute bottom-2 right-2 flex space-x-2">
+                            <button type="button" onclick="document.getElementById('addImageInput').click()" class="text-gray-500 hover:text-gray-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Form Input -->
-                <div class="w-2/3">
-                    <div class="space-y-4 w-full">
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Product Name<span class="text-red-500">*</span></label>
-                            <input type="text" value="INA Watch Jam Tangan Kayu Jati Seri Rara Ngigel" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
-                        </div>
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Variation<span class="text-red-500">*</span></label>
-                            <input type="text" value="L. Abu Polos" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
-                        </div>
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Sale<span class="text-red-500">*</span></label>
-                            <input type="text" value="3,6K" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
-                        </div>
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Price<span class="text-red-500">*</span></label>
-                            <input type="text" value="Rp 214.900" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
-                        </div>
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Stock<span class="text-red-500">*</span></label>
-                            <input type="text" value="38" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                    <!-- Form Input -->
+                    <div class="w-2/3">
+                        <div class="space-y-4 w-full">
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Product Name<span class="text-red-500">*</span></label>
+                                <input type="text" name="product_name" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Variation<span class="text-red-500">*</span></label>
+                                <input type="text" name="variation" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Sale<span class="text-red-500">*</span></label>
+                                <input type="text" name="sale" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Price<span class="text-red-500">*</span></label>
+                                <input type="text" name="price" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Stock<span class="text-red-500">*</span></label>
+                                <input type="number" name="stock" min="0" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="px-10 py-3 bg-[#A3A4F6] text-white rounded-full hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-bold hover:scale-105 transform transition-all duration-200">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 
-
-    {{-- Pop Up --}}
+    {{-- Edit Pop Up --}}
     <div id="editPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-[#F6F6FF] rounded-[30px] w-2/3 py-8 px-16 max-h-[90vh] overflow-y-aut">
+        <div class="bg-[#F6F6FF] rounded-[30px] w-2/3 py-8 px-16 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <strong class="text-xl">Edit</strong>
-                <button type="submit" form="editForm" class="px-10 py-3 mt-8 bg-[#A3A4F6] text-white rounded-full hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-bold hover:scale-105 transform transition-all duration-200">Save</button>
+                <strong class="text-xl">Edit Product</strong>
+                <button type="button" onclick="closePopup('editPopup')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
-            <form action="" method="POST">
-            <div class="flex gap-8">
+            <form id="editForm" method="POST" enctype="multipart/form-data">
                 @csrf
-                <!-- Gambar Produk -->
-                <div class="bg-white rounded-xl border p-4 flex justify-center items-center relative w-1/3">
-                    <img src="{{ asset('images/contoh2.png') }}" alt="Product Image" class="max-h-96 object-contain" />
-                    <div class="absolute bottom-2 right-2 flex space-x-2">
-                        <button class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </button>
-                        <button class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
+                @method('PUT')
+                <div class="flex gap-8">
+                    <!-- Gambar Produk -->
+                    <div class="bg-white rounded-xl border p-4 flex justify-center items-center relative w-1/3">
+                        <img id="editPreviewImage" src="{{ asset('images/contoh2.png') }}" alt="Product Image" class="max-h-96 object-contain" />
+                        <input type="file" id="editImageInput" name="image" accept="image/*" class="hidden" onchange="previewImage('editImageInput', 'editPreviewImage')">
+                        <div class="absolute bottom-2 right-2 flex space-x-2">
+                            <button type="button" onclick="document.getElementById('editImageInput').click()" class="text-gray-500 hover:text-gray-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Form Input -->
-                <div class="w-2/3">
-                    <div class="space-y-4 w-full">
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Product Name<span class="text-red-500">*</span></label>
-                            <input type="text" value="INA Watch Jam Tangan Kayu Jati Seri Rara Ngigel" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
-                        </div>
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Variation<span class="text-red-500">*</span></label>
-                            <input type="text" value="L. Abu Polos" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
-                        </div>
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Sale<span class="text-red-500">*</span></label>
-                            <input type="text" value="3,6K" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
-                        </div>
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Price<span class="text-red-500">*</span></label>
-                            <input type="text" value="Rp 214.900" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
-                        </div>
-                        <div class="flex flex-col mb-2">
-                            <label class="text-gray-400 text-lg font-semibold pl-2">Stock<span class="text-red-500">*</span></label>
-                            <input type="text" value="38" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                    <!-- Form Input -->
+                    <div class="w-2/3">
+                        <div class="space-y-4 w-full">
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Product Name<span class="text-red-500">*</span></label>
+                                <input type="text" id="editProductName" name="product_name" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Variation<span class="text-red-500">*</span></label>
+                                <input type="text" id="editVariation" name="variation" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Sale<span class="text-red-500">*</span></label>
+                                <input type="text" id="editSale" name="sale" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Price<span class="text-red-500">*</span></label>
+                                <input type="text" id="editPrice" name="price" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
+                            <div class="flex flex-col mb-2">
+                                <label class="text-gray-400 text-lg font-semibold pl-2">Stock<span class="text-red-500">*</span></label>
+                                <input type="number" id="editStock" name="stock" min="0" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="px-10 py-3 bg-[#A3A4F6] text-white rounded-full hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-bold hover:scale-105 transform transition-all duration-200">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    {{-- Pop Up --}}
+    {{-- Delete Pop Up --}}
     <div id="deletePopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl p-6 w-[28rem]">
             <div class="flex gap-4 items-center">
-                <img src="{{ asset('images/contoh2.png') }}" alt="Product Image" class="h-40 object-contain">
+                <img id="deleteProductImage" src="{{ asset('images/contoh2.png') }}" alt="Product Image" class="h-40 object-cover rounded-md">
                 <div>
-                    <p class="font-bold text-lg leading-tight">INA Watch Jam Tangan Kayu Jati Seri Rara Ngigel</p>
-                    <p class="text-gray-400 text-sm mt-1">Variasi: L. Abu Polos</p>
+                    <p id="deleteProductName" class="font-bold text-lg leading-tight"></p>
+                    <p id="deleteProductVariation" class="text-gray-400 text-sm mt-1"></p>
                 </div>
             </div>
             <p class="text-center mt-6 mb-4">Are you sure you want to delete this item?</p>
             <div class="flex gap-4">
-                <button class="flex-1 bg-gray-200 text-gray-600 font-semibold py-2 rounded-full hover:bg-gray-300">Cancel</button>
-                <button class="flex-1 bg-purple-400 text-white font-semibold py-2 rounded-full hover:bg-purple-500">Delete</button>
+                <button onclick="closePopup('deletePopup')" class="flex-1 bg-gray-200 text-gray-600 font-semibold py-2 rounded-full hover:bg-gray-300">Cancel</button>
+                <form id="deleteForm" method="POST" class="flex-1">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full bg-purple-400 text-white font-semibold py-2 rounded-full hover:bg-purple-500">Delete</button>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
-    function openPopup(id) {
-        document.getElementById(id).classList.remove('hidden');
+    function openAddPopup() {
+        // Reset form
+        document.getElementById('addForm').reset();
+        document.getElementById('addPreviewImage').src = "{{ asset('images/contoh2.png') }}";
+        document.getElementById('addPopup').classList.remove('hidden');
+    }
+
+    function openEditPopup(productId) {
+        fetch(`/seller/stock/${productId}`)
+            .then(response => response.json())
+            .then(product => {
+                document.getElementById('editForm').action = `/seller/stock/${product.id}`;
+                document.getElementById('editProductName').value = product.product_name;
+                document.getElementById('editVariation').value = product.variation;
+                document.getElementById('editSale').value = product.sale;
+                document.getElementById('editPrice').value = product.price;
+                document.getElementById('editStock').value = product.stock;
+                
+                const imageUrl = product.image ? 
+                    (product.image.startsWith('images/') ? 
+                        `{{ asset('') }}${product.image}` : 
+                        `{{ asset('storage/') }}${product.image}`) : 
+                    "{{ asset('images/contoh2.png') }}";
+                document.getElementById('editPreviewImage').src = imageUrl;
+                
+                document.getElementById('editPopup').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error loading product data');
+            });
+    }
+
+    function openDeletePopup(productId, productName, variation, imageUrl) {
+        document.getElementById('deleteForm').action = `/seller/stock/${productId}`;
+        document.getElementById('deleteProductName').textContent = productName;
+        document.getElementById('deleteProductVariation').textContent = `Variasi: ${variation}`;
+        document.getElementById('deleteProductImage').src = imageUrl;
+        document.getElementById('deletePopup').classList.remove('hidden');
     }
 
     function closePopup(id) {
         document.getElementById(id).classList.add('hidden');
+    }
+
+    function previewImage(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     document.addEventListener('click', function (e) {
@@ -209,5 +283,5 @@ body {
             }
         });
     });
-</script>
+    </script>
 @endsection
