@@ -43,7 +43,8 @@
         <div class="flex items-center justify-between max-w-7xl mx-auto">
             <div class="flex items-center">
                 <!-- Hamburger Menu for Mobile -->
-                <button id="sidebarToggle" class="md:hidden mr-4 focus:outline-none">
+                <button id="
+                Toggle" class="md:hidden mr-4 focus:outline-none">
                     <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
@@ -69,7 +70,7 @@
 
     <div class="flex">
         <!-- Sidebar -->
-        <div id="sidebar" class="w-64 bg-white min-h-screen border-[3px] border-[#CBA3F6] rounded-tr-[30px] transform md:translate-x-0 -translate-x-full md:static fixed top-0 left-0 h-full transition-transform duration-300 ease-in-out z-50">
+            <div id="sidebar" class="w-64 bg-white border-[3px] border-[#CBA3F6] rounded-tr-[30px] transform md:translate-x-0 -translate-x-full md:static fixed top-0 bottom-0 left-0 transition-transform duration-300 ease-in-out z-50">
             <div class="p-6 flex justify-between items-center">
                 <h2 id="sidebarTitle" class="font-bold text-lg">Menu</h2>
                 <!-- Sidebar Toggle Button for Desktop -->

@@ -273,7 +273,7 @@ body {
     }
 
     function openDeletePopup(productId, productName, variation, imageUrl) {
-        document.getElementById('deleteForm').action = `/seller/stock/${productId}`;
+        document.getElementById('deleteForm').action = "{{ route('stock.destroy', ':id') }}".replace(':id', productId);
         document.getElementById('deleteProductName').textContent = productName;
         document.getElementById('deleteProductVariation').textContent = `Variasi: ${variation}`;
         document.getElementById('deleteProductImage').src = imageUrl;
