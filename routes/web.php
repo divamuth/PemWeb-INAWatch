@@ -6,6 +6,8 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 
 // Redirect root to seller dashboard
 Route::get('/', function () {
@@ -72,6 +74,14 @@ Route::prefix('seller')->group(function () {
 Route::get('/seller/stock/{id}', [ProductController::class, 'show'])->name('stock.show');
 Route::put('/seller/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
 Route::delete('/seller/stock/{id}', [ProductController::class, 'destroy'])->name('stock.destroy');
+
+// Cart routes
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/order', [OrderController::class, 'store'])->name('user.store');
+Route::get('/user/order', [OrderController::class, 'index'])->name('user.order');
 
 // API routes
 Route::get('/api/order-stats', [SellerController::class, 'getOrderStats']);

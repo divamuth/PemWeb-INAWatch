@@ -70,19 +70,35 @@
                     <p class="font-bold text-lg">Rp214.900</p>
                 </div>
             </div>
-            <div class="my-4 border border-gray-300 rounded-[30px] p-5 text-md relative mt-6">
-                <div class="flex flex-row">
-                    <p class="font-bold ml-4 mr-10">05 Juni 2025</p>
-                    <p class="text-gray-700 text-sm bg-gray-200 py-0.5 px-4 rounded-full shadow-md">Cancelled</p>
-                </div>
-                <div class="flex flex-row my-4">
-                    <img src="{{ asset('images/contoh1.png') }}" alt="jam" class="h-28 mx-12">
-                    <div>
-                        <p class="w-64">INA Watch Jam Tangan Kayu Jati Seri Rara Ngigel</p>
-                        <p class="text-sm text-gray-400">Variasi: L. Abu Polos</p>
-                        <p>x1</p>
+            @forelse ($orders as $order)
+                <div class="my-4 border border-gray-300 rounded-[30px] p-5 text-md relative mt-6">
+                    <div class="flex flex-row">
+                        <p class="font-bold ml-4 mr-10">{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y') }}</p>
+                        <p class="text-sm py-0.5 px-4 rounded-full shadow-md 
+                            {{ $order->status === 'Finished' ? 'bg-green-200 text-green-700' : ($order->status === 'Cancelled' ? 'bg-gray-200 text-gray-700' : 'bg-blue-200 text-blue-700') }}">
+                            {{ $order->status }}
+                        </p>
+                    </div>
+
+                    @foreach ($order->items as $item)
+                        <div class="flex flex-row my-4">
+                            <img src="{{ asset('storage/' . ($item->product->image ?? 'images/contoh1.png')) }}" alt="jam" class="h-28 mx-12">
+                            <div>
+                                <p class="w-64">{{ $item->product_name }}</p>
+                                <p class="text-sm text-gray-400">Variasi: {{ $item->product->variation ?? '-' }}</p>
+                                <p>x{{ $item->quantity }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    <div class="absolute bottom-5 right-5">
+                        <p class="text-sm text-gray-400">Total Order:</p>
+                        <p class="font-bold text-lg">Rp{{ number_format($order->total_price, 0, ',', '.') }}</p>
                     </div>
                 </div>
+            @empty
+                <p class="text-gray-500 mt-10 text-center">No orders found.</p>
+            @endforelse
                 <div class="absolute bottom-5 right-5">
                     <p class="text-sm text-gray-400">Total Order:</p>
                     <p class="font-bold text-lg">Rp214.900</p>
