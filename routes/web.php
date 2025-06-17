@@ -62,6 +62,10 @@ Route::prefix('seller')->group(function () {
     Route::post('/profile', [StoreController::class, 'update'])->name('seller.profile.update');
 });
 
+// Route untuk ProductController
+Route::get('/seller/stock/{id}', [ProductController::class, 'show'])->name('stock.show');
+Route::put('/seller/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
+
 // API routes
 Route::get('/api/order-stats', [SellerController::class, 'getOrderStats']);
 Route::get('/api/stock-stats', [SellerController::class, 'getStockStats']);
