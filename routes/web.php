@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\UserProfileController;
 
 // Redirect root to seller dashboard
 Route::get('/', function () {
@@ -13,8 +14,12 @@ Route::get('/', function () {
 
 // Redirect root to user dashboard
 Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
-Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
+
+Route::get('/user/profile', [UserProfileController::class, 'edit'])->name('user.profile.edit');
+Route::post('/user/profile', [UserProfileController::class, 'update'])->name('user.profile.update')->middleware('auth');
+
 Route::get('/user/cart', [UserController::class, 'cart'])->name('user.cart');
+
 Route::post('/user/address', [AddressController::class, 'store'])->name('user.address.store');
 Route::get('/user/address', [AddressController::class, 'index'])
     ->middleware('auth')
