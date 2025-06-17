@@ -38,20 +38,20 @@
                     + Add New Addresses
                 </button>
             </div>
-            <div class="bg-pastel-pink-200 m-4 border border-gray-300 rounded-[30px] p-5 text-md">
-                <strong>Kos</strong><br>
-                <strong>Kezia</strong>
-                <p class="font-semibold">081208120812</p>
-                <p class="text-gray-400">Wisma Butter Jalan Jalan Ke Gunung Kidul (Cakep)</p>
-                <p class="text-gray-400">JEBRES, KOTA SURAKARTA (SOLO), JAWA TENGAH, ID, 66666</p>
-            </div>
-            <div class="bg-white m-4 border border-gray-300 rounded-[30px] p-5 text-md">
-                <strong>Kos</strong><br>
-                <strong>Kezia</strong>
-                <p class="font-semibold">081208120812</p>
-                <p class="text-gray-400">Wisma Butter Jalan Jalan Ke Gunung Kidul (Cakep)</p>
-                <p class="text-gray-400">JEBRES, KOTA SURAKARTA (SOLO), JAWA TENGAH, ID, 66666</p>
-            </div>
+
+            @foreach ($addresses as $address)
+                <div class="bg-pastel-pink-200 m-4 border border-gray-300 rounded-[30px] p-5 text-md">
+                    <strong>{{ $address->category }}</strong><br>
+                    <strong>{{ $address->name }}</strong>
+                    <p class="font-semibold">{{ $address->phone }}</p>
+                    <p class="text-gray-400">{{ $address->address_detail }}</p>
+                    <p class="text-gray-400">
+                        {{ strtoupper($address->district) }}, {{ strtoupper($address->city) }}, 
+                        {{ strtoupper($address->province) }}, {{ $address->post }}
+                    </p>
+                </div>
+            @endforeach
+            
         </div>
     </div>
 </div>
@@ -60,7 +60,7 @@
 <div id="addressPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-[#F6F6FF] rounded-[30px] w-2/3 py-8 px-16 max-h-[90vh] overflow-y-auto">
         <strong class="flex mb-4 text-xl">New Address</strong>
-        <form action="" method="POST">
+        <form action="{{ route('user.address.store') }}" method="POST">
             @csrf
             <div class="flex flex-col mb-2">
                 <label for="category" class="text-gray-400 text-lg font-semibold pl-2">Category</label>
@@ -73,7 +73,7 @@
                 </div>
                 <div class="flex flex-col w-1/2">
                     <label for="phone" class="text-gray-400 text-lg font-semibold pl-2">Phone Number</label>
-                    <input type="number" name="phone" id="phone" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4 w-full" required>
+                    <input type="text" name="phone" id="phone" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4 w-full" required>
                 </div>
             </div>
             <div class="flex flex-col mb-2">
@@ -91,6 +91,10 @@
             <div class="flex flex-col mb-2">
                 <label for="post" class="text-gray-400 text-lg font-semibold pl-2">Post ID</label>
                 <input type="number" name="post" id="post" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4" required>
+            </div>
+            <div class="flex flex-col mb-2">
+                <label for="address_detail" class="text-gray-400 text-lg font-semibold pl-2">Detail</label>
+                <input type="text" name="address_detail" id="address_detail" class="bg-white h-8 border rounded-[30px] focus:outline-none focus:ring-2 focus:ring-purple-300 pl-4">
             </div>
             <div class="flex justify-end space-x-4">
                 <button type="button" onclick="closePopup()" class="px-6 py-2 mt-8 bg-gray-400 text-white rounded-full hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700 font-bold hover:scale-105 transform transition-all duration-200">
