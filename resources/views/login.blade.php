@@ -43,38 +43,59 @@
         </div>
 
         <!-- Right Side (Form Login) -->
-        <div class="flex-1 flex justify-center items-center">
-            <div class="form-login bg-white shadow-lg rounded-[30px] p-10 max-w-[400px] min-h-[550px]">
-                <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+        <form method="POST" action="{{ route('login.submit') }}">
+            @csrf
+            <div class="flex-1 flex justify-center items-center">
+                <div class="form-login bg-white shadow-lg rounded-[30px] p-10 max-w-[400px] min-h-[550px]">
+                    <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
 
-                <!-- Input Username -->
-                <input 
-                    type="text" 
-                    placeholder="Username or Email" 
-                    class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
-                />
+                    <!-- Display Errors -->
+                    @if (session('error'))
+                        <div class="bg-red-100 text-red-700 p-3 rounded-full mb-4">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if ($errors->any())
+                        <div class="bg-red-100 text-red-700 p-3 rounded-full mb-4">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                <!-- Input Password -->
-                <input 
-                    type="password" 
-                    placeholder="Password" 
-                    class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
-                />
+                    <!-- Input Username -->
+                    <input 
+                        type="email" 
+                        name="email"
+                        placeholder="Email" 
+                        class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
+                    />
 
-                <!-- Login Button -->
-                <button 
-                    class="w-full bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 rounded-full transition"
-                >
-                    LOG IN
-                </button>
+                    <!-- Input Password -->
+                    <input 
+                        type="password" 
+                        name="password"
+                        placeholder="Password" 
+                        class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
+                    />
 
-                <!-- Register Link -->
-                <p class="text-center mt-4 text-sm">
-                    Don't have an account? 
-                    <a href="/register" class="underline text-purple-800 hover:text-red-700">Register here.</a>
-                </p>
+                    <!-- Login Button -->
+                    <button 
+                        class="w-full bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 rounded-full transition"
+                        type="submit">
+                        LOG IN
+                    </button>
+
+                    <!-- Register Link -->
+                    <p class="text-center mt-4 text-sm">
+                        Don't have an account? 
+                        <a href="{{ route('register') }}" class="underline text-purple-800 hover:text-red-700">Register here.</a>
+                    </p>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </body>
 </html>

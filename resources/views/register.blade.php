@@ -43,52 +43,70 @@
         </div>
 
         <!-- Right Side (Form Login) -->
-        <div class="flex-1 flex justify-center items-center">
-            <div class="form-login bg-white shadow-lg rounded-[30px] p-10 max-w-[400px] min-h-[550px]">
-                <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
+        <form method="POST" action="{{ route('register.submit') }}">
+            @csrf
+            <div class="flex-1 flex justify-center items-center">
+                <div class="form-login bg-white shadow-lg rounded-[30px] p-10 max-w-[400px] min-h-[550px]">
+                    <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
 
-                <!-- Input Email -->
-                <input 
-                    type="email" 
-                    placeholder="Email" 
-                    class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
-                />
+                    <!-- Display Validation Errors -->
+                    @if ($errors->any())
+                        <div class="bg-red-100 text-red-700 p-3 rounded-full mb-4">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                <!-- Input Username -->
-                <input 
-                    type="text" 
-                    placeholder="Username" 
-                    class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
-                />
+                    <!-- Input Email -->
+                    <input 
+                        type="email" 
+                        name="email"
+                        placeholder="Email" 
+                        class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
+                    />
 
-                <!-- Input Password -->
-                <input 
-                    type="password" 
-                    placeholder="Password" 
-                    class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
-                />
+                    <!-- Input Username -->
+                    <input 
+                        type="text" 
+                        name="name"
+                        placeholder="Username" 
+                        class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
+                    />
 
-                <!-- Input Password -->
-                <input 
-                    type="password" 
-                    placeholder="Confirm password" 
-                    class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
-                />
+                    <!-- Input Password -->
+                    <input 
+                        type="password" 
+                        name="password"
+                        placeholder="Password" 
+                        class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
+                    />
 
-                <!-- Register Button -->
-                <button 
-                    class="w-full bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 rounded-full transition"
-                >
-                    REGISTER
-                </button>
+                    <!-- Input Password -->
+                    <input 
+                        type="password" 
+                        name="password_confirmation"
+                        placeholder="Confirm password" 
+                        class="w-full p-3 mb-4 rounded-full bg-gray-200 placeholder:text-gray-500 focus:outline-none"
+                    />
 
-                <!-- Register Link -->
-                <p class="text-center mt-4 text-sm">
-                    Already have an account?
-                    <a href="/login" class="underline text-purple-800 hover:text-red-700">Login here.</a>
-                </p>
+                    <!-- Register Button -->
+                    <button 
+                        class="w-full bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 rounded-full transition"
+                        type="submit">
+                        REGISTER
+                    </button>
+
+                    <!-- Register Link -->
+                    <p class="text-center mt-4 text-sm">
+                        Already have an account?
+                        <a href="{{ route('login') }}" class="underline text-purple-800 hover:text-red-700">Login here.</a>
+                    </p>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </body>
 </html>

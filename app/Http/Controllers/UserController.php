@@ -34,13 +34,14 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
+        $credentials['email'] = strtolower($credentials['email']);
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            return redirect()->route('user.dashboard')->with('success', 'Login successful! Welcome back!');
         }
 
-        return back()->with('error', 'Email atau password salah.');
+        return back()->with('error', 'Incorrect email or password');
     }
 
     public function register()
@@ -89,5 +90,28 @@ class UserController extends Controller
     public function payment()
     {
         return view('user.payment');
+    }
+
+    public function store(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        // Simpan ke database
+        $user = User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+        ]);
+
+        // Login langsung
+        Auth::login($user);
+
+        // Redirect ke dashboard user
+        return redirect()->route('user.dashboard')->with('success', 'Registration successful! Welcome to Ina Watch.');
     }
 }
