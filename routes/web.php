@@ -20,10 +20,12 @@ Route::post('/user/profile', [UserProfileController::class, 'update'])->name('us
 
 Route::get('/user/cart', [UserController::class, 'cart'])->name('user.cart');
 
-Route::post('/user/address', [AddressController::class, 'store'])->name('user.address.store');
-Route::get('/user/address', [AddressController::class, 'index'])
-    ->middleware('auth')
-    ->name('user.address');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/user/address', [AddressController::class, 'index'])->name('user.address.index');
+    Route::post('/user/address', [AddressController::class, 'store'])->name('user.address.store');
+    Route::put('/user/address/{address}', [AddressController::class, 'update'])->name('user.address.update');
+    Route::delete('/user/address/{address}', [AddressController::class, 'destroy'])->name('user.address.destroy');
+});
 
 Route::get('/user/address', [AddressController::class, 'index'])->name('user.address');
 Route::get('/user/order', [UserController::class, 'order'])->name('user.order');
