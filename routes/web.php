@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreController;
-use App\Http\Controllers\ProductController;
 
 // Redirect root to user dashboard
 Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard')->middleware('auth');
@@ -50,12 +49,6 @@ Route::prefix('seller')->group(function () {
     Route::get('/seller/stock-stats', [SellerController::class, 'getStockStats'])->name('seller.getStockStats');
     Route::get('/chatseller', [SellerController::class, 'chat'])->name('seller.chatseller');
     Route::post('/chatseller/{user}/send', [SellerController::class, 'sendChat'])->name('seller.chatseller.send');
-
-    Route::get('/stock', [ProductController::class, 'index'])->name('seller.stock');
-    Route::post('/stock', [ProductController::class, 'store'])->name('stock.store');
-    Route::get('/stock/{id}', [ProductController::class, 'show'])->name('stock.show');
-    Route::put('/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
-    Route::delete('/stock/{id}', [ProductController::class, 'destroy'])->name('stock.destroy');
 
     // ✅ Gunakan StoreController untuk profil toko
     Route::get('/profile', [StoreController::class, 'edit'])->name('seller.profile');
