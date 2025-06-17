@@ -51,12 +51,6 @@ class SellerController extends Controller
         return response()->json($stockData);
     }
 
-    // public function edit()
-    // {
-    //     $product = Product::first();
-    //     return view('seller.edit', compact('product'));
-    // }
-
     public function order()
     {
     $orders = Order::with('products')->get(); 
@@ -70,7 +64,13 @@ class SellerController extends Controller
 
     public function getStockStats()
     {
-        return response()->json(Product::getStockStats());
+        $sold = Product::sum('sold');
+        $stock = Product::sum('stock');
+
+        return response()->json([
+            'sold' => $sold,
+            'stock' => $stock,
+        ]);
     }
 
     public function profile () {
