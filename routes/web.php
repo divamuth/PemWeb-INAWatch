@@ -9,13 +9,14 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ChatController;
 
 // Root redirect
 Route::get('/', function () {
     return redirect('/seller/dashboard');
 });
 
-// CSRF Token Route
+// CSRF Token Route (pertimbangkan untuk menghapus jika menggunakan @csrf di form)
 Route::get('/csrf-token', function () {
     return response()->json(['csrf_token' => csrf_token()]);
 })->middleware('web');
@@ -91,7 +92,7 @@ Route::prefix('seller')->name('seller.')->middleware('auth')->group(function () 
     // Stock Management
     Route::get('/stock', [SellerController::class, 'stock'])->name('stock');
     Route::get('/stock/create', [SellerController::class, 'create'])->name('stock.create');
-    Route::post('/stock', [ProductController::class, 'store'])->name('stock.store');
+    Route::post('/stock', [ProductController::class, 'store'])->name('stock.store'); 
     Route::get('/stock/{id}', [ProductController::class, 'show'])->name('stock.show');
     Route::get('/stock/{id}/edit', [SellerController::class, 'edit'])->name('stock.edit');
     Route::put('/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
@@ -112,6 +113,15 @@ Route::prefix('seller')->name('seller.')->middleware('auth')->group(function () 
     // Store Profile
     Route::get('/profile', [StoreController::class, 'edit'])->name('profile');
     Route::post('/profile', [StoreController::class, 'update'])->name('profile.update');
+});
+
+// Chat Routes (dipisahkan untuk menghindari konflik)
+Route::prefix('chat')->name('chat.')->group(function () {
+    Route::get('/user/{userId}', [ChatController::class, 'index'])->name('index'); // Ubah path untuk menghindari konflik
+    Route::post('/', [ChatController::class, 'store'])->name('store');
+    Route::get('/message/{id}', [ChatController::class, 'show'])->name('show'); // Ubah path untuk menghindari konflik
+    Route::put('/{id}', [ChatController::class, 'update'])->name('update');
+    Route::delete('/{id}', [ChatController::class, 'destroy'])->name('destroy');
 });
 
 // API Routes

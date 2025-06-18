@@ -45,8 +45,7 @@ body {
         <div class="border-b px-6 py-4">
             <div class="grid grid-cols-12 gap-4 items-center">
                 <div class="col-span-4 flex items-center gap-2">
-                    <img src="{{ $product->image ? (str_starts_with($product->image, 'images/') ? asset($product->image) : asset('storage/'.$product->image)) : asset('images/contoh2.png') }}" 
-                         alt="{{ $product->product_name }}" class="h-40 rounded-md object-cover">
+                    <img id="" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->product_name }}" class="h-40 rounded-md object-cover">
                     <div>
                         <div class="font-semibold">{{ $product->product_name }}</div>
                         <div class="text-gray-500 text-xs">Varian: {{ $product->variation }}</div>
@@ -78,7 +77,7 @@ body {
         <div class="bg-[#F6F6FF] rounded-[30px] w-2/3 py-8 px-16 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <strong class="text-xl">Add Product</strong>
-                <button type="button" onclick="closePopup('addPopup')" class="text-gray-500 hover:text-gray-700">
+                <button type="button" onclick="openAddPopup('addPopup')" class="text-gray-500 hover:text-gray-700">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -89,7 +88,7 @@ body {
                 <div class="flex gap-8">
                     <!-- Gambar Produk -->
                     <div class="bg-white rounded-xl border p-4 flex justify-center items-center relative w-1/3">
-                        <img id="addPreviewImage" src="{{ asset('images/contoh2.png') }}" alt="Product Image" class="max-h-96 object-contain" />
+                        <img id="addPreviewImage" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->product_name }}" class="h-40 rounded-md object-cover">
                         <input type="file" id="addImageInput" name="image" accept="image/*" class="hidden" onchange="previewImage('addImageInput', 'addPreviewImage')">
                         <div class="absolute bottom-2 right-2 flex space-x-2">
                             <button type="button" onclick="document.getElementById('addImageInput').click()" class="text-gray-500 hover:text-gray-700">
@@ -150,7 +149,7 @@ body {
                 <div class="flex gap-8">
                     <!-- Gambar Produk -->
                     <div class="bg-white rounded-xl border p-4 flex justify-center items-center relative w-1/3">
-                        <img id="editPreviewImage" src="{{ asset('images/contoh2.png') }}" alt="Product Image" class="max-h-96 object-contain" />
+                        <img id="editPreviewImage" src="{{ asset('storage/' . $product->image) }}" alt="Product Image" class="max-h-96 object-contain" />
                         <input type="file" id="editImageInput" name="image" accept="image/*" class="hidden" onchange="previewImage('editImageInput', 'editPreviewImage')">
                         <div class="absolute bottom-2 right-2 flex space-x-2">
                             <button type="button" onclick="document.getElementById('editImageInput').click()" class="text-gray-500 hover:text-gray-700">
@@ -219,9 +218,28 @@ body {
     <script>
     function openAddPopup() {
         // Reset form
-        document.getElementById('addForm').reset();
-        document.getElementById('addPreviewImage').src = "{{ asset('images/contoh2.png') }}";
-        document.getElementById('addPopup').classList.remove('hidden');
+        const form = document.getElementById('addForm');
+        const previewImg = document.getElementById('addPreviewImage');
+        const inputFile = document.getElementById('addImageInput');
+
+        form.reset();
+        inputFile.value = ''; // clear input file (jaga-jaga)
+        previewImg.src = '';  // clear preview supaya user tahu belum ada gambar
+
+        document.getElementById('addPopup').classList.remove('hidden');   
+    }
+
+    function previewImage(inputId, imgId) {
+        const input = document.getElementById(inputId);
+        const img = document.getElementById(imgId);
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function openEditPopup(productId) {
