@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
@@ -12,13 +13,13 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'status',
-        'total_price', // Include this if you add the column
+        'total_price', 
         'order_date',
     ];
 
     protected $casts = [
         'order_date' => 'datetime',
-        'total_price' => 'decimal:2', // Include this if you add the column
+        'total_price' => 'decimal:2', 
     ];
 
     // Relationship with OrderItem
@@ -49,5 +50,15 @@ class Order extends Model
     public function calculateTotal()
     {
         return $this->items->sum('total_price');
+    }
+
+    public static function getOrderStats()
+    {
+        return [
+            'finished' => self::where('status', 'finished')->count(),
+            'in_packing' => self::where('status', 'in_packing')->count(),
+            'delivered' => self::where('status', 'delivered')->count(),
+            'cancelled' => self::where('status', 'cancelled')->count(),
+        ];
     }
 }

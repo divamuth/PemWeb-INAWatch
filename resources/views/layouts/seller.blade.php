@@ -69,7 +69,7 @@
     </div>
 
     <div class="flex">
-       <!-- Sidebar -->
+        <!-- Sidebar -->
         <div id="sidebar" class="w-64 bg-white border-t-[3px] border-r-[3px] border-[#CBA3F6] rounded-tr-[30px] transform md:translate-x-0 -translate-x-full md:static fixed top-0 bottom-0 left-0 transition-transform duration-300 ease-in-out z-50">
             <div class="p-6 flex justify-between items-center">
                 <h2 id="sidebarTitle" class="font-bold text-lg">Menu</h2>
