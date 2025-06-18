@@ -115,14 +115,11 @@ Route::prefix('seller')->name('seller.')->middleware('auth')->group(function () 
     Route::post('/profile', [StoreController::class, 'update'])->name('profile.update');
 });
 
-// Chat Routes (dipisahkan untuk menghindari konflik)
-Route::prefix('chat')->name('chat.')->group(function () {
-    Route::get('/user/{userId}', [ChatController::class, 'index'])->name('index'); // Ubah path untuk menghindari konflik
-    Route::post('/', [ChatController::class, 'store'])->name('store');
-    Route::get('/message/{id}', [ChatController::class, 'show'])->name('show'); // Ubah path untuk menghindari konflik
-    Route::put('/{id}', [ChatController::class, 'update'])->name('update');
-    Route::delete('/{id}', [ChatController::class, 'destroy'])->name('destroy');
-});
+// Route untuk ProductControllerAdd commentMore actions
+Route::get('/seller/stock/{id}', [ProductController::class, 'show'])->name('stock.show');
+Route::put('/seller/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
+Route::post('/seller/stock', [SellerController::class, 'store'])->name('stock.store');
+Route::delete('/seller/stock/{id}', [ProductController::class, 'destroy'])->name('stock.destroy');
 
 // API Routes
 Route::prefix('api')->name('api.')->group(function () {
