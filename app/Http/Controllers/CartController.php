@@ -50,14 +50,14 @@ class CartController extends Controller
 
     public function update(Request $request, $id)
     {
-        $cart = session()->get('cart', []);
-
-        if (isset($cart[$id])) {
-            $newQty = max(1, intval($request->quantity)); // minimal 1
-            $cart[$id]['quantity'] = $newQty;
-            session()->put('cart', $cart);
+        $quantity = $request->quantity;
+        $cart = session('cart', []);
+        if ($quantity <= 0) {
+            unset($cart[$id]);
+        } else {
+            $cart[$id]['quantity'] = $quantity;
         }
-
+        session(['cart' => $cart]);
         return redirect()->route('cart.index');
     }
 
