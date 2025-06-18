@@ -73,22 +73,23 @@ class OrderController extends Controller
         // Create order
         $order = Order::create([
             'user_id' => Auth::id(),
-            'status' => 'Pending Payment',
+            'status' => 'In Packing',
             'order_date' => now(),
             'total_price' => $finalTotal,
             'shipping_cost' => $shippingCost,
             'subtotal' => $totalPrice,
         ]);
 
-        // Create order items
-        foreach ($cart as $id => $item) {
+        // Create order items - FIXED VERSION
+        foreach ($cart as $cartKey => $item) {
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $id,
+                'product_id' => $item['product_id'], // Gunakan product_id dari item, bukan cart key
                 'product_name' => $item['product_name'],
                 'price' => $item['price'],
                 'quantity' => $item['quantity'],
                 'total_price' => $item['price'] * $item['quantity'],
+                'selected_strap' => $item['selected_strap'] ?? null, // Tambahan: simpan info strap
             ]);
         }
 
@@ -102,7 +103,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $orderId)
     {
         $request->validate([
-            'status' => 'required|in:Pending Payment,In Packing,Shipped,Delivered,Cancelled'
+            'status' => 'required|in:In Packing,Delivered,Finished,Cancelled'
         ]);
 
         $order = Order::findOrFail($orderId);

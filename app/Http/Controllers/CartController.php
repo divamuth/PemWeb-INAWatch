@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\Address; // Pastikan model Address sudah ada
+use App\Models\Address;
 
 class CartController extends Controller
 {
@@ -146,30 +146,37 @@ class CartController extends Controller
         $isBuyNow = session('is_buy_now', false);
         
         if (!$isBuyNow) {
-            // Checkout dari cart biasa
-            $cart = session()->get('cart', []);
-            
-            if (empty($cart)) {
-                return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
-            }
+            if (!session('checkout_cart')) {
+                $cart = session()->get('cart', []);
+                
+                if (empty($cart)) {
+                    return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
+                }
 
-            // Hitung total
-            $subtotal = 0;
-            foreach ($cart as $item) {
-                $subtotal += $item['price'] * $item['quantity'];
-            }
-            
-            $shipping = 17000;
-            $total = $subtotal + $shipping;
+                // Hitung total untuk semua item di cart (fallback jika tidak ada item terpilih)
+                $subtotal = 0;
+                foreach ($cart as $item) {
+                    $subtotal += $item['price'] * $item['quantity'];
+                }
+                
+                $shipping = 17000;
+                $total = $subtotal + $shipping;
 
-            // Simpan data checkout ke session
-            session([
-                'checkout_cart' => $cart,
-                'checkout_subtotal' => $subtotal,
-                'checkout_shipping' => $shipping,
-                'checkout_total' => $total,
-                'is_buy_now' => false
-            ]);
+                // Simpan data checkout ke session
+                session([
+                    'checkout_cart' => $cart,
+                    'checkout_subtotal' => $subtotal,
+                    'checkout_shipping' => $shipping,
+                    'checkout_total' => $total,
+                    'is_buy_now' => false
+                ]);
+            }
+        }
+
+        // Validasi: pastikan ada item di checkout_cart
+        $checkoutCart = session('checkout_cart', []);
+        if (empty($checkoutCart)) {
+            return redirect()->route('cart.index')->with('error', 'No items selected for checkout!');
         }
 
         // Jika belum ada address yang dipilih, ambil address default/pertama
@@ -195,7 +202,6 @@ class CartController extends Controller
         return view('user.payment');
     }
 
-    // Method untuk mendapatkan list address dalam format JSON
     public function getAddressesList()
     {
         $addresses = auth()->user()->addresses;
@@ -206,7 +212,6 @@ class CartController extends Controller
         ]);
     }
 
-    // Method untuk menyimpan address yang dipilih ke session
     public function selectCheckoutAddress(Request $request)
     {
         $request->validate([
@@ -242,15 +247,67 @@ class CartController extends Controller
         ]);
     }
 
-    // Method untuk proses checkout dari cart
     public function proceedToCheckout(Request $request)
     {
         $cart = session()->get('cart', []);
-        
+        $selectedItems = $request->input('selected_items', []);
+
+        // Jika cart kosong
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
         }
 
+        // Jika tidak ada item yang dipilih
+        if (empty($selectedItems)) {
+            return redirect()->route('cart.index')->with('error', 'Please select at least one item to checkout.');
+        }
+
+        // Validasi bahwa semua selected items ada di cart
+        $validSelectedItems = [];
+        foreach ($selectedItems as $cartKey) {
+            if (isset($cart[$cartKey])) {
+                $validSelectedItems[] = $cartKey;
+            }
+        }
+
+        if (empty($validSelectedItems)) {
+            return redirect()->route('cart.index')->with('error', 'No valid items selected for checkout.');
+        }
+
+        // Filter hanya item yang dipilih
+        $checkoutCart = [];
+        $subtotal = 0;
+
+        foreach ($validSelectedItems as $cartKey) {
+            $checkoutCart[$cartKey] = $cart[$cartKey];
+            $subtotal += $cart[$cartKey]['price'] * $cart[$cartKey]['quantity'];
+        }
+
+        // Hitung total dengan biaya pengiriman
+        $shipping = 17000;
+        $total = $subtotal + $shipping;
+
+        // CLEAR session checkout sebelumnya untuk memastikan data fresh
+        session()->forget(['checkout_cart', 'checkout_subtotal', 'checkout_shipping', 'checkout_total', 'is_buy_now']);
+
+        // Simpan data checkout ke session
+        session([
+            'checkout_cart' => $checkoutCart,
+            'checkout_subtotal' => $subtotal,
+            'checkout_shipping' => $shipping,
+            'checkout_total' => $total,
+            'is_buy_now' => false
+        ]);
+
+        // Debug log (opsional)
+        \Log::info('Checkout process completed', [
+            'selected_items_count' => count($validSelectedItems),
+            'subtotal' => $subtotal,
+            'total' => $total,
+            'selected_items' => $validSelectedItems
+        ]);
+
+        // Redirect ke halaman checkout
         return redirect()->route('cart.checkout');
     }
 }

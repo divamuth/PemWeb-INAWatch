@@ -131,6 +131,7 @@
                         @csrf
                         <input type="hidden" name="payment_method" id="selectedPaymentMethod">
                         <input type="hidden" name="address_id" value="{{ session('selected_address.id') }}">
+                        <input type="hidden" name="status" value="In Packing">
                         <button type="button" id="buyNow" class="w-full bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white py-4 rounded-2xl text-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] shadow-lg">
                             Buy Now
                         </button>
@@ -159,6 +160,9 @@
         </div>
     </div>
 </div>
+
+<!-- CSRF Token untuk AJAX -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <!-- PAYMENT MODALS -->
 <div id="modalOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -221,15 +225,33 @@
     const addressModal = document.getElementById("addressModal");
 
     function openAddressSelection() {
+        console.log('Opening address selection modal...');
+        
         // Load addresses via AJAX
-        fetch('/checkout/addresses/list')
-            .then(response => response.json())
-            .then(data => {
-                let addressListHtml = '';
+        fetch('/checkout/addresses/list', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Addresses loaded:', data);
+            let addressListHtml = '';
+            
+            if (data.addresses && data.addresses.length > 0) {
                 data.addresses.forEach(address => {
                     addressListHtml += `
                         <div class="border border-gray-300 rounded-[30px] p-4 mb-4 cursor-pointer hover:bg-gray-50 transition-colors" 
-                             onclick="selectAddress(${JSON.stringify(address).replace(/"/g, '&quot;')})">
+                             onclick="selectAddress(${address.id}, '${address.category.replace(/'/g, "\\'")}', '${address.name.replace(/'/g, "\\'")}', '${address.phone.replace(/'/g, "\\'")}', '${address.address_detail.replace(/'/g, "\\'")}', '${address.district.replace(/'/g, "\\'")}', '${address.city.replace(/'/g, "\\'")}', '${address.province.replace(/'/g, "\\'")}', '${address.post}')">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <p class="font-bold text-gray-900">${address.category}</p>
@@ -247,60 +269,71 @@
                         </div>
                     `;
                 });
+            } else {
+                addressListHtml = `
+                    <div class="text-center py-8">
+                        <p class="text-gray-500 mb-4">No addresses found</p>
+                        <a href="/user/address" class="inline-block bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600">
+                            Add New Address
+                        </a>
+                    </div>
+                `;
+            }
 
-                if (data.addresses.length === 0) {
-                    addressListHtml = `
-                        <div class="text-center py-8">
-                            <p class="text-gray-500 mb-4">No addresses found</p>
-                            <a href="/user/address" class="inline-block bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600">
-                                Add New Address
-                            </a>
-                        </div>
-                    `;
-                }
-
-                document.getElementById('addressList').innerHTML = addressListHtml;
-                addressModal.classList.remove('hidden');
-            })
-            .catch(error => {
-                console.error('Error loading addresses:', error);
-                alert('Failed to load addresses');
-            });
+            document.getElementById('addressList').innerHTML = addressListHtml;
+            addressModal.classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error loading addresses:', error);
+            alert('Failed to load addresses: ' + error.message);
+        });
     }
 
-    function selectAddress(address) {
+    function selectAddress(id, category, name, phone, addressDetail, district, city, province, post) {
+        console.log('Selecting address:', { id, category, name, phone, addressDetail, district, city, province, post });
+        
         // Send selected address to server
         fetch('/checkout/select-address', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify({ address_id: address.id })
+            body: JSON.stringify({ address_id: id })
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Select address response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Address selection response:', data);
             if (data.success) {
                 // Update the display
                 document.getElementById('selectedAddressDisplay').innerHTML = `
-                    <p class="font-bold text-gray-900">${address.category}</p>
-                    <p class="font-bold text-gray-900">${address.name}</p>
-                    <p class="text-gray-700">${address.phone}</p>
+                    <p class="font-bold text-gray-900">${category}</p>
+                    <p class="font-bold text-gray-900">${name}</p>
+                    <p class="text-gray-700">${phone}</p>
                     <p class="text-sm text-gray-500 leading-relaxed">
-                        ${address.address_detail}<br>
-                        ${address.district.toUpperCase()}, ${address.city.toUpperCase()}, ${address.province.toUpperCase()}, ${address.post}
+                        ${addressDetail}<br>
+                        ${district.toUpperCase()}, ${city.toUpperCase()}, ${province.toUpperCase()}, ${post}
                     </p>
                 `;
                 
                 // Update hidden input
-                document.querySelector('input[name="address_id"]').value = address.id;
+                document.querySelector('input[name="address_id"]').value = id;
                 
                 closeAddressModal();
+            } else {
+                alert('Failed to select address: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {
             console.error('Error selecting address:', error);
-            alert('Failed to select address');
+            alert('Failed to select address: ' + error.message);
         });
     }
 
@@ -335,11 +368,19 @@
     });
 
     document.getElementById("qrisPaidBtn").addEventListener("click", function() {
-        paymentForm.submit();
+        hideAllModalContent();
+        successContent.classList.remove("hidden");
+        setTimeout(() => {
+            paymentForm.submit();
+        }, 2000); // Delay 2 detik untuk menampilkan modal sukses sebelum submit
     });
 
     document.getElementById("vaPaidBtn").addEventListener("click", function() {
-        paymentForm.submit();
+        hideAllModalContent();
+        successContent.classList.remove("hidden");
+        setTimeout(() => {
+            paymentForm.submit();
+        }, 2000); // Delay 2 detik untuk menampilkan modal sukses sebelum submit
     });
 
     function hideAllModalContent() {

@@ -42,7 +42,7 @@
                 $total += $subtotal;
             @endphp
             <div class="grid grid-cols-[0.5fr_2fr_1fr_1fr_1fr_0.5fr] gap-4 items-center py-4 text-center">
-                <div><input type="checkbox" class="w-4 h-4"></div>
+                <div><input type="checkbox" name="selected_items[]" value="{{ $id }}" class="w-4 h-4 item-checkbox"></div>
                 <div class="flex items-center text-left gap-3">
                     <img src="{{ asset($item['image']) }}" class="w-20 h-20 rounded-md object-cover">
                     <div>
@@ -99,23 +99,16 @@
     @if (!empty(session('cart')))
     <div class="flex justify-between items-center mt-6 bg-white shadow-lg rounded-full px-6 py-4 border">
         <div class="flex items-center gap-2">
-            <input type="checkbox" checked class="w-4 h-4" id="select-all">
-            <label for="select-all" class="text-sm text-gray-700 cursor-pointer">
-                Choose all ({{ count(session('cart')) }})
-            </label>
+            <input type="checkbox" id="choose-all" class="w-4 h-4">
+            <label for="choose-all" class="text-sm text-gray-700 cursor-pointer">Choose all ({{ count(session('cart')) }})</label>
         </div>
         <div class="flex items-center gap-6">
-            <div class="text-right">
-                <p class="text-sm text-gray-600">
-                    Total ({{ count(session('cart')) }} product{{ count(session('cart')) > 1 ? 's' : '' }}):
-                </p>
-                <p class="text-xl font-bold text-gray-900">
-                    Rp {{ number_format($total, 0, ',', '.') }}
-                </p>
-            </div>
-            <form action="{{ route('cart.proceedToCheckout') }}" method="POST">
+            <span class="text-md text-gray-700">Total (<span id="selected-count">0</span> product<span id="product-plural">s</span>):
+                <strong id="selected-total">Rp 0</strong></span>
+            <form action="{{ route('cart.proceedToCheckout') }}" method="POST" id="checkout-form">
                 @csrf
-                <button type="submit" class="bg-black text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors">
+                <!-- Hidden inputs untuk item yang dipilih akan ditambahkan di sini via JavaScript -->
+                <button type="submit" class="bg-black text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors">
                     Checkout
                 </button>
             </form>
@@ -125,23 +118,91 @@
 </main>
 
 <script>
-    // Select all functionality
-    const selectAllCheckbox = document.getElementById('select-all');
-    const itemCheckboxes = document.querySelectorAll('input[type="checkbox"]:not(#select-all)');
+document.addEventListener('DOMContentLoaded', function() {
+    const chooseAll = document.getElementById('choose-all');
+    const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+    const selectedCount = document.getElementById('selected-count');
+    const selectedTotal = document.getElementById('selected-total');
+    const productPlural = document.getElementById('product-plural');
+    const checkoutForm = document.getElementById('checkout-form');
 
-    if (selectAllCheckbox && itemCheckboxes.length > 0) {
-        selectAllCheckbox.addEventListener('change', function() {
-            itemCheckboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-        });
-
+    // Function to update total price and selected count
+    function updateSummary() {
+        let total = 0;
+        let count = 0;
+        
         itemCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
-                selectAllCheckbox.checked = allChecked;
-            });
+            if (checkbox.checked) {
+                const row = checkbox.closest('div.grid');
+                const priceText = row.querySelector('div:nth-child(5)').textContent;
+                const price = parseFloat(priceText.replace('Rp ', '').replace(/\./g, ''));
+                total += price;
+                count++;
+            }
         });
+        
+        selectedCount.textContent = count;
+        selectedTotal.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+        productPlural.textContent = count === 1 ? '' : 's';
     }
+
+    // Handle choose all checkbox
+    chooseAll.addEventListener('change', () => {
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.checked = chooseAll.checked;
+        });
+        updateSummary();
+    });
+
+    // Update summary when individual checkboxes change
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            updateSummary();
+            const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+            const someChecked = Array.from(itemCheckboxes).some(cb => cb.checked);
+            chooseAll.checked = allChecked;
+            chooseAll.indeterminate = someChecked && !allChecked;
+        });
+    });
+
+    // Handle form submission - add selected items as hidden inputs
+    checkoutForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default submission
+        
+        // Clear any existing hidden inputs for selected items
+        const existingHiddenInputs = checkoutForm.querySelectorAll('input[name="selected_items[]"]');
+        existingHiddenInputs.forEach(input => input.remove());
+        
+        // Get selected items
+        const selectedItems = [];
+        itemCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                selectedItems.push(checkbox.value);
+                
+                // Create hidden input for each selected item
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'selected_items[]';
+                hiddenInput.value = checkbox.value;
+                checkoutForm.appendChild(hiddenInput);
+            }
+        });
+        
+        // Check if any items are selected
+        if (selectedItems.length === 0) {
+            alert('Please select at least one item to checkout.');
+            return;
+        }
+        
+        // Debug: log selected items
+        console.log('Selected items for checkout:', selectedItems);
+        
+        // Submit the form
+        checkoutForm.submit();
+    });
+
+    // Initial update
+    updateSummary();
+});
 </script>
 @endsection
