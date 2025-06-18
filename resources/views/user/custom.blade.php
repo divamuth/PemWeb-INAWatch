@@ -85,7 +85,7 @@
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" name="quantity" id="buy-now-quantity" value="1">
                     <input type="hidden" name="selected_strap" id="buy-now-strap" value="">
-                    <button type="submit" class="w-full bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-colors">Buy Now</button>
+                    <button type="submit" class="w-full bg-purple-300 text-white px-6 py-3 rounded-full hover:bg-pink-200 transition-colors">Buy Now</button>
                 </form>
             </div>
         </div>

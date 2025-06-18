@@ -19,7 +19,12 @@
         }
     </script>
     <style>
-        /* Desktop sidebar collapsed state */
+        /* Mobile sidebar */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        /* Desktop sidebar */
         .sidebar-collapsed {
             width: 0 !important;
             padding: 0 !important;
@@ -27,13 +32,16 @@
             overflow: hidden;
         }
         
-        /* Smooth transitions */
-        #sidebar {
-            transition: width 0.3s ease-in-out;
-        }
-        
-        #mainContent {
-            transition: margin-left 0.3s ease-in-out;
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 40;
+            display: none;
         }
     </style>
 </head>
@@ -43,8 +51,7 @@
         <div class="flex items-center justify-between max-w-7xl mx-auto">
             <div class="flex items-center">
                 <!-- Hamburger Menu for Mobile -->
-                <button id="
-                Toggle" class="md:hidden mr-4 focus:outline-none">
+                <button id="sidebarToggle" class="md:hidden mr-4 focus:outline-none">
                     <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
@@ -68,9 +75,12 @@
         </div>
     </div>
 
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
     <div class="flex">
         <!-- Sidebar -->
-        <div id="sidebar" class="w-64 bg-white border-t-[3px] border-r-[3px] border-[#CBA3F6] rounded-tr-[30px] transform md:translate-x-0 -translate-x-full md:static fixed top-0 bottom-0 left-0 transition-transform duration-300 ease-in-out z-50">
+        <div id="sidebar" class="w-64 bg-white border-t-[3px] border-r-[3px] border-[#CBA3F6] rounded-tr-[30px] fixed md:relative inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0">
             <div class="p-6 flex justify-between items-center">
                 <h2 id="sidebarTitle" class="font-bold text-lg">Menu</h2>
                 <!-- Sidebar Toggle Button for Desktop -->
@@ -105,67 +115,71 @@
         </div>
 
         <!-- Main Content -->
-        <div id="mainContent" class="flex-1 p-8 bg-white border-t-[3px] border-l-[3px] border-[#FFB3F8] rounded-tl-[30px] transition-all duration-300 ease-in-out">
+        <div id="mainContent" class="flex-1 p-8 bg-white border-t-[3px] border-l-[3px] border-[#FFB3F8] rounded-tl-[30px] md:ml-4 transition-all duration-300 ease-in-out">
             @yield('content')
         </div>
     </div>
 
     <script>
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebarToggleDesktop = document.getElementById('sidebarToggleDesktop');
-        const sidebarToggleDesktopInside = document.getElementById('sidebarToggleDesktopInside');
-        
-        let isCollapsed = false;
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarToggleDesktop = document.getElementById('sidebarToggleDesktop');
+            const sidebarToggleDesktopInside = document.getElementById('sidebarToggleDesktopInside');
+            
+            let isCollapsed = false;
+            let isMobileSidebarOpen = false;
 
-        function toggleSidebar() {
-            if (window.innerWidth >= 768) {
-                // Desktop behavior - hide/show completely
-                isCollapsed = !isCollapsed;
-                if (isCollapsed) {
-                    sidebar.classList.add('sidebar-collapsed');
-                    mainContent.style.marginLeft = '0';
+            // Toggle mobile sidebar
+            function toggleMobileSidebar() {
+                isMobileSidebarOpen = !isMobileSidebarOpen;
+                if (isMobileSidebarOpen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.style.display = 'block';
                 } else {
-                    sidebar.classList.remove('sidebar-collapsed');
-                    mainContent.style.marginLeft = '1rem';
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.style.display = 'none';
                 }
-            } else {
-                // Mobile behavior - slide in/out
-                sidebar.classList.toggle('-translate-x-full');
             }
-        }
 
-        // Event listeners
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarToggleDesktop.addEventListener('click', toggleSidebar);
-        sidebarToggleDesktopInside.addEventListener('click', toggleSidebar);
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth < 768 && 
-                !sidebar.contains(e.target) && 
-                !sidebarToggle.contains(e.target) && 
-                !sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.add('-translate-x-full');
+            // Toggle desktop sidebar
+            function toggleDesktopSidebar() {
+                isCollapsed = !isCollapsed;
+                sidebar.classList.toggle('sidebar-collapsed', isCollapsed);
+                mainContent.style.marginLeft = isCollapsed ? '0' : '1rem';
             }
-        });
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                // Reset mobile transform when switching to desktop
-                sidebar.classList.remove('-translate-x-full');
-                // Restore desktop margin if not collapsed
-                if (!isCollapsed) {
-                    mainContent.style.marginLeft = '1rem';
+            // Event listeners
+            sidebarToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (window.innerWidth < 768) {
+                    toggleMobileSidebar();
+                } else {
+                    toggleDesktopSidebar();
                 }
-            } else {
-                // Reset collapsed state when switching to mobile
-                sidebar.classList.remove('sidebar-collapsed');
-                mainContent.style.marginLeft = '0';
-                isCollapsed = false;
-            }
+            });
+
+            sidebarToggleDesktop.addEventListener('click', toggleDesktopSidebar);
+            sidebarToggleDesktopInside.addEventListener('click', toggleDesktopSidebar);
+
+            // Close sidebar when clicking overlay
+            sidebarOverlay.addEventListener('click', function() {
+                toggleMobileSidebar();
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) {
+                    // Reset mobile state
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.style.display = 'none';
+                    isMobileSidebarOpen = false;
+                    // Restore desktop state
+                    mainContent.style.marginLeft = isCollapsed ? '0' : '1rem';
+                }
+            });
         });
     </script>
 </body>
