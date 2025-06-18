@@ -84,12 +84,14 @@
                         @foreach ($methods as $method)
                         <label class="flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition-colors p-2 rounded-lg">
                             <input type="radio" name="payment" value="{{ $method['name'] }}" class="payment-method w-5 h-5 text-purple-600">
+
                             <div class="flex items-center gap-3 flex-1">
-                                <div class="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-                                    <span class="text-xs font-bold text-gray-600">
-                                        {{ strtoupper(substr($method['name'], 0, 2)) }}
-                                    </span>
+                                <!-- Logo -->
+                                <div class="w-8 h-8 flex items-center justify-center">
+                                    <img src="{{ asset('images/' . $method['logo']) }}" alt="{{ $method['name'] }}" class="object-contain h-8 w-8">
                                 </div>
+
+                                <!-- Text -->
                                 <span class="font-medium text-gray-900">{{ $method['name'] }}</span>
                             </div>
                         </label>
@@ -135,7 +137,7 @@
         <div id="qrisContent" class="hidden">
             <h3 class="text-xl font-bold text-gray-900 mb-4">Scan the QR Code to Pay</h3>
             <div class="bg-gray-50 p-6 rounded-xl mb-6">
-                <img src="{{ asset('images/qris.png') }}" alt="QRIS" class="mx-auto w-48 h-48 object-contain">
+                <img src="{{ asset('images/qris.jpg') }}" alt="QRIS" class="mx-auto w-48 h-48 object-contain">
             </div>
             <p class="text-sm text-gray-600 mb-6">Scan this QR code using your preferred payment app</p>
             <button id="qrisPaidBtn" class="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-xl font-semibold transition-colors">
