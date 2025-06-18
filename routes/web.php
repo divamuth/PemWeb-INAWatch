@@ -62,6 +62,7 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/custom', [UserController::class, 'custom'])->name('custom');
 });
 
+
 // Cart Routes
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('/add/{id}', [CartController::class, 'add'])->name('add');
@@ -69,6 +70,13 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove');
     Route::patch('/update/{id}', [CartController::class, 'update'])->name('update');
 });
+
+// Route untuk ProductController
+Route::get('/seller/stock/{id}', [ProductController::class, 'show'])->name('stock.show');
+Route::put('/seller/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
+Route::post('/seller/stock', [SellerController::class, 'store'])->name('stock.store');
+Route::delete('/seller/stock/{id}', [ProductController::class, 'destroy'])->name('stock.destroy');
+
 
 // Seller Routes
 Route::prefix('seller')->name('seller.')->group(function () {

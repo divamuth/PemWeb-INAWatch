@@ -98,4 +98,68 @@ class SellerController extends Controller
 
         return redirect()->route('seller.chatseller', ['user' => $userId]);
     }
+
+    public function store(Request $request)
+    {
+        // dd($request->all());
+        // dd(Product::latest()->first());
+        $validated = $request->validate([
+            'product_name' => 'required|string',
+            'variation' => 'required|string',
+            'sale' => 'required|string',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imagePath = $image->store('images', 'public'); // simpan di public/storage/images
+            $validated['image'] = $imagePath;
+        }
+
+        Product::create($validated);
+
+        return redirect()->route('seller.stock')->with('success', 'Product added successfully!');
+    }
+
+    // public function edit($id)
+    // {
+    //     $product = Product::findOrFail($id);
+    //     return view('seller.edit', compact('product'));
+    // }
+
+    // public function update(Request $request, $id)
+    // {
+    //     $product = Product::findOrFail($id);
+
+    //     $validated = $request->validate([
+    //         'product_name' => 'required|string',
+    //         'variation' => 'required|string',
+    //         'sale' => 'required|string',
+    //         'price' => 'required|numeric',
+    //         'stock' => 'required|integer|min:0',
+    //         'image' => 'nullable|image|max:2048',
+    //     ]);
+
+    //     if ($request->hasFile('image')) {
+    //         $image = $request->file('image');
+    //         $imagePath = $image->store('images', 'public');
+    //         $validated['image'] = $imagePath;
+    //     } else {
+    //         // pertahankan gambar lama
+    //         $validated['image'] = $product->image;
+    //     }
+
+    //     $product->update($validated);
+
+    //     return redirect()->route('seller.stock')->with('success', 'Product updated successfully!');
+    // }
+
+    // public function getProductById($id)
+    // {
+    //     $product = Product::findOrFail($id);
+    //     return response()->json($product);
+    // }
+
 }
