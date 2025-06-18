@@ -30,7 +30,7 @@
 
             <!-- Search Box -->
             <div class="flex-grow flex justify-center">
-                <form action="{{ route('user.dashboard') }}" method="GET" class="relative w-[700px] h-[45px]">
+                <form action="{{ route('user.dashboard') }}" method="GET" class="relative w-full max-w-2xl h-[45px]">
                     <input type="text" name="search" placeholder="Search product" value="{{ request()->query('search') }}"
                         class="w-full h-full pl-6 pr-16 rounded-[30px] text-lg shadow-md focus:outline-none" />
                     <button type="submit" class="absolute right-5 top-1/2 transform -translate-y-1/2 h-6 w-6 opacity-70">
