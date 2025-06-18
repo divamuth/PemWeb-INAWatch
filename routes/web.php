@@ -88,6 +88,7 @@ Route::prefix('checkout')->name('checkout.')->middleware('auth')->group(function
 Route::prefix('seller')->name('seller.')->middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [SellerController::class, 'index'])->name('dashboard');
+    Route::get('/get-stock-stats', [SellerController::class, 'getStockStats'])->name('getStockStats');
 
     // Stock Management
     Route::get('/stock', [SellerController::class, 'stock'])->name('stock');
