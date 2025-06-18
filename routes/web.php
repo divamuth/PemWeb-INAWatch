@@ -70,11 +70,22 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
 });
 
 // Cart Routes (umum)
-Route::prefix('cart')->name('cart.')->middleware('auth')->group(function () {
+Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/add/{id}', [CartController::class, 'add'])->name('add');
+    Route::patch('/update/{id}', [CartController::class, 'update'])->name('update');
     Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove');
-    Route::put('/update/{id}', [CartController::class, 'update'])->name('update');
+    
+    // Checkout routes (memerlukan auth)
+    Route::middleware('auth')->group(function () {
+        Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
+        Route::post('/checkout', [CartController::class, 'proceedToCheckout'])->name('proceedToCheckout');
+        Route::post('/buy-now', [CartController::class, 'buyNow'])->name('buyNow');
+        
+        // Address selection for checkout
+        Route::get('/addresses/list', [CartController::class, 'getAddressesList'])->name('addresses.list');
+        Route::post('/addresses/select', [CartController::class, 'selectCheckoutAddress'])->name('addresses.select');
+    });
 });
 
 // Checkout Routes (umum)

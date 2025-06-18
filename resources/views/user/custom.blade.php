@@ -10,6 +10,20 @@
 
 <!-- Product Detail -->
 <main class="max-w-6xl mx-auto bg-white mt-6 rounded-2xl p-8 shadow">
+    
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         
         <!-- Gambar dan Info -->
@@ -32,21 +46,23 @@
 
         <!-- Opsi Custom -->
         <div>
-            <h3 class="text-md font-semibold text-gray-800 mb-2">Choose your favourite strap:</h3>
+            <h3 class="text-md font-semibold text-gray-800 mb-2">Choose your favourite strap: <span class="text-red-500">*</span></h3>
             <div class="flex flex-wrap gap-3 mb-6">
                 @foreach (['L. Abu Polos', 'L. Hijau Mint', 'L. Biru Putih', 'L. Terracotta', 'L. Cream', 'L. Lapis Kuning', 'L. Lapis Putih', 'L. Orange', 'L. Orange Putih'] as $strap)
-                    <button class="w-36 h-10 bg-white border border-gray-300 rounded-full text-sm flex items-center justify-center text-center hover:bg-purple-100 strap-option" 
+                    <button class="w-36 h-10 bg-white border border-gray-300 rounded-full text-sm flex items-center justify-center text-center hover:bg-purple-100 strap-option transition-colors" 
                             data-strap="{{ $strap }}">{{ $strap }}</button>
                 @endforeach
             </div>
+            <div id="strap-error" class="text-red-500 text-sm mb-4 hidden">Please select a strap first!</div>
 
             <!-- Kuantitas -->
             <h3 class="text-md font-semibold text-gray-800 mb-2">Kuantitas:</h3>
             <div class="flex items-center space-x-4 mt-4">
-                <button id="decrease" class="w-10 h-10 rounded-full bg-gray-200 text-xl font-bold hover:bg-gray-300">-</button>
-                <span id="quantity" class="text-xl font-semibold">1</span>
-                <button id="increase" class="w-10 h-10 rounded-full bg-gray-200 text-xl font-bold hover:bg-gray-300">+</button>
+                <button id="decrease" class="w-10 h-10 rounded-full bg-gray-200 text-xl font-bold hover:bg-gray-300 transition-colors">-</button>
+                <span id="quantity" class="text-xl font-semibold min-w-8 text-center">1</span>
+                <button id="increase" class="w-10 h-10 rounded-full bg-gray-200 text-xl font-bold hover:bg-gray-300 transition-colors">+</button>
             </div>
+            <div id="stock-error" class="text-red-500 text-sm mt-2 hidden">Stock tidak mencukupi!</div>
 
             <!-- Total & Button -->
             <div class="mb-4 mt-60">
@@ -55,15 +71,22 @@
             </div>
 
             <div class="flex gap-4 mt-5">
-                <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
+                <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1" id="add-to-cart-form">
                     @csrf
                     <input type="hidden" name="quantity" id="cart-quantity" value="1">
                     <input type="hidden" name="selected_strap" id="selected-strap" value="">
-                    <button type="submit" class="w-full bg-white border border-black text-black px-6 py-3 rounded-full flex items-center justify-center gap-2 hover:bg-gray-100">
+                    <button type="submit" class="w-full bg-white border border-black text-black px-6 py-3 rounded-full flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors">
                         Add to <span>🛒</span>
                     </button>
                 </form>
-                <button class="flex-1 bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800" onclick="buyNow()">Buy Now</button>
+                
+                <form action="{{ route('cart.buyNow') }}" method="POST" class="flex-1" id="buy-now-form">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    <input type="hidden" name="quantity" id="buy-now-quantity" value="1">
+                    <input type="hidden" name="selected_strap" id="buy-now-strap" value="">
+                    <button type="submit" class="w-full bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-colors">Buy Now</button>
+                </form>
             </div>
         </div>
     </div>
@@ -76,6 +99,12 @@
     const totalPriceEl = document.getElementById('total-price');
     const cartQuantityInput = document.getElementById('cart-quantity');
     const selectedStrapInput = document.getElementById('selected-strap');
+    const buyNowQuantityInput = document.getElementById('buy-now-quantity');
+    const buyNowStrapInput = document.getElementById('buy-now-strap');
+    const strapError = document.getElementById('strap-error');
+    const stockError = document.getElementById('stock-error');
+    const addToCartForm = document.getElementById('add-to-cart-form');
+    const buyNowForm = document.getElementById('buy-now-form');
     
     const basePrice = {{ $product->price }};
     const maxStock = {{ $product->stock }};
@@ -87,6 +116,28 @@
         const total = basePrice * quantity;
         totalPriceEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
         cartQuantityInput.value = quantity;
+        buyNowQuantityInput.value = quantity;
+    }
+
+    // Update strap inputs
+    function updateStrapInputs() {
+        selectedStrapInput.value = selectedStrap;
+        buyNowStrapInput.value = selectedStrap;
+    }
+
+    // Show/hide error messages
+    function showStrapError() {
+        strapError.classList.remove('hidden');
+        setTimeout(() => {
+            strapError.classList.add('hidden');
+        }, 3000);
+    }
+
+    function showStockError() {
+        stockError.classList.remove('hidden');
+        setTimeout(() => {
+            stockError.classList.add('hidden');
+        }, 3000);
     }
 
     // Quantity controls
@@ -96,7 +147,7 @@
             quantityEl.textContent = quantity;
             updateTotal();
         } else {
-            alert('Stock tidak mencukupi!');
+            showStockError();
         }
     });
 
@@ -122,50 +173,25 @@
             button.classList.add('bg-purple-200', 'border-purple-400');
             
             selectedStrap = button.dataset.strap;
-            selectedStrapInput.value = selectedStrap;
+            updateStrapInputs();
         });
     });
 
-    // Buy now function
-    function buyNow() {
+    // Form validation
+    addToCartForm.addEventListener('submit', function(e) {
         if (!selectedStrap) {
-            alert('Please select a strap first!');
-            return;
+            e.preventDefault();
+            showStrapError();
+            return false;
         }
-        
-        // Create form for buy now
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("user.checkout") }}';
-        
-        // Add CSRF token
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        form.appendChild(csrfToken);
-        
-        // Add product data
-        const productId = document.createElement('input');
-        productId.type = 'hidden';
-        productId.name = 'product_id';
-        productId.value = '{{ $product->id }}';
-        form.appendChild(productId);
-        
-        const productQuantity = document.createElement('input');
-        productQuantity.type = 'hidden';
-        productQuantity.name = 'quantity';
-        productQuantity.value = quantity;
-        form.appendChild(productQuantity);
-        
-        const productStrap = document.createElement('input');
-        productStrap.type = 'hidden';
-        productStrap.name = 'selected_strap';
-        productStrap.value = selectedStrap;
-        form.appendChild(productStrap);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
+    });
+
+    buyNowForm.addEventListener('submit', function(e) {
+        if (!selectedStrap) {
+            e.preventDefault();
+            showStrapError();
+            return false;
+        }
+    });
 </script>
 @endsection
