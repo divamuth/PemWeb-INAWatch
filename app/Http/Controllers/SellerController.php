@@ -53,8 +53,8 @@ class SellerController extends Controller
 
     public function order()
     {
-    $orders = Order::with('products')->get(); 
-    return view('seller.order', compact('orders'));
+        $orders = Order::with(['items.product', 'user'])->get();
+        return view('seller.order', compact('orders'));
     }
 
     public function getOrderStats()

@@ -61,4 +61,10 @@ class Order extends Model
             'cancelled' => self::where('status', 'cancelled')->count(),
         ];
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'order_items')
+            ->withPivot(['quantity', 'price', 'product_name']);
+    }
 }
