@@ -12,18 +12,28 @@
                 <div class="bg-white p-6 shadow-lg" style="border-radius: 30px;">
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-2xl font-bold" style="color: #a3bef6;">ADDRESS</h3>
-                        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        <button onclick="openAddressSelection()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                             Change
                         </button>
                     </div>
-                    <div class="space-y-2">
-                        <p class="font-bold text-gray-900">Kos</p>
-                        <p class="font-bold text-gray-900">Kezia</p>
-                        <p class="text-gray-700">081208120812</p>
-                        <p class="text-sm text-gray-500 leading-relaxed">
-                            Wisma Butter Jalan Jalan Ke Gunung Kidul (Cakep)<br>
-                            JEBRES, KOTA SURAKARTA (SOLO), JAWA TENGAH, ID, 66666
-                        </p>
+                    <div class="space-y-2" id="selectedAddressDisplay">
+                        @if(session('selected_address'))
+                            @php $selectedAddress = session('selected_address'); @endphp
+                            <p class="font-bold text-gray-900">{{ $selectedAddress['category'] }}</p>
+                            <p class="font-bold text-gray-900">{{ $selectedAddress['name'] }}</p>
+                            <p class="text-gray-700">{{ $selectedAddress['phone'] }}</p>
+                            <p class="text-sm text-gray-500 leading-relaxed">
+                                {{ $selectedAddress['address_detail'] }}<br>
+                                {{ strtoupper($selectedAddress['district']) }}, {{ strtoupper($selectedAddress['city']) }}, {{ strtoupper($selectedAddress['province']) }}, {{ $selectedAddress['post'] }}
+                            </p>
+                        @else
+                            <div class="text-center py-4">
+                                <p class="text-gray-500 mb-4">No address selected</p>
+                                <button onclick="openAddressSelection()" class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
+                                    Select Address
+                                </button>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -120,6 +130,7 @@
                     <form action="{{ route('user.orders.store') }}" method="POST" id="paymentForm">
                         @csrf
                         <input type="hidden" name="payment_method" id="selectedPaymentMethod">
+                        <input type="hidden" name="address_id" value="{{ session('selected_address.id') }}">
                         <button type="button" id="buyNow" class="w-full bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white py-4 rounded-2xl text-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] shadow-lg">
                             Buy Now
                         </button>
@@ -130,14 +141,33 @@
     </div>
 </div>
 
-<!-- MODALS -->
+<!-- Address Selection Modal -->
+<div id="addressModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl w-2/3 max-h-[80vh] overflow-y-auto m-4">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h3 class="text-2xl font-bold" style="color: #a3bef6;">Select Address</h3>
+                <button onclick="closeAddressModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="p-6" id="addressList">
+            <!-- Address list will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- PAYMENT MODALS -->
 <div id="modalOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div id="modalContent" class="bg-white rounded-2xl p-8 w-full max-w-md text-center space-y-6 relative shadow-2xl">
         <!-- QRIS -->
         <div id="qrisContent" class="hidden">
             <h3 class="text-xl font-bold text-gray-900 mb-4">Scan the QR Code to Pay</h3>
             <div class="bg-gray-50 p-6 rounded-xl mb-6">
-                <img src="{{ asset('images/qris.jpg') }}" alt="QRIS" class="mx-auto w-48 h-48 object-contain">
+                <img src="{{ asset('images/qris.png') }}" alt="QRIS" class="mx-auto w-48 h-48 object-contain">
             </div>
             <p class="text-sm text-gray-600 mb-6">Scan this QR code using your preferred payment app</p>
             <button id="qrisPaidBtn" class="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-xl font-semibold transition-colors">
@@ -178,6 +208,7 @@
 </div>
 
 <script>
+    // Payment Modal Functions
     const modalOverlay = document.getElementById("modalOverlay");
     const qrisContent = document.getElementById("qrisContent");
     const vaContent = document.getElementById("vaContent");
@@ -186,14 +217,111 @@
     const paymentForm = document.getElementById("paymentForm");
     const selectedPaymentMethod = document.getElementById("selectedPaymentMethod");
 
+    // Address Modal Functions
+    const addressModal = document.getElementById("addressModal");
+
+    function openAddressSelection() {
+        // Load addresses via AJAX
+        fetch('/checkout/addresses/list')
+            .then(response => response.json())
+            .then(data => {
+                let addressListHtml = '';
+                data.addresses.forEach(address => {
+                    addressListHtml += `
+                        <div class="border border-gray-300 rounded-[30px] p-4 mb-4 cursor-pointer hover:bg-gray-50 transition-colors" 
+                             onclick="selectAddress(${JSON.stringify(address).replace(/"/g, '&quot;')})">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-bold text-gray-900">${address.category}</p>
+                                    <p class="font-bold text-gray-900">${address.name}</p>
+                                    <p class="text-gray-700">${address.phone}</p>
+                                    <p class="text-sm text-gray-500 leading-relaxed">
+                                        ${address.address_detail}<br>
+                                        ${address.district.toUpperCase()}, ${address.city.toUpperCase()}, ${address.province.toUpperCase()}, ${address.post}
+                                    </p>
+                                </div>
+                                <button class="px-3 py-1 bg-purple-500 text-white rounded-full text-sm font-bold hover:bg-purple-600">
+                                    Select
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (data.addresses.length === 0) {
+                    addressListHtml = `
+                        <div class="text-center py-8">
+                            <p class="text-gray-500 mb-4">No addresses found</p>
+                            <a href="/user/address" class="inline-block bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600">
+                                Add New Address
+                            </a>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('addressList').innerHTML = addressListHtml;
+                addressModal.classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error loading addresses:', error);
+                alert('Failed to load addresses');
+            });
+    }
+
+    function selectAddress(address) {
+        // Send selected address to server
+        fetch('/checkout/select-address', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ address_id: address.id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the display
+                document.getElementById('selectedAddressDisplay').innerHTML = `
+                    <p class="font-bold text-gray-900">${address.category}</p>
+                    <p class="font-bold text-gray-900">${address.name}</p>
+                    <p class="text-gray-700">${address.phone}</p>
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        ${address.address_detail}<br>
+                        ${address.district.toUpperCase()}, ${address.city.toUpperCase()}, ${address.province.toUpperCase()}, ${address.post}
+                    </p>
+                `;
+                
+                // Update hidden input
+                document.querySelector('input[name="address_id"]').value = address.id;
+                
+                closeAddressModal();
+            }
+        })
+        .catch(error => {
+            console.error('Error selecting address:', error);
+            alert('Failed to select address');
+        });
+    }
+
+    function closeAddressModal() {
+        addressModal.classList.add('hidden');
+    }
+
+    // Payment Modal Logic
     document.getElementById("buyNow").addEventListener("click", function () {
+        // Check if address is selected
+        if (!document.querySelector('input[name="address_id"]').value) {
+            alert("Please select a delivery address first");
+            return;
+        }
+
         let selected = document.querySelector('input[name="payment"]:checked');
         if (!selected) {
             alert("Please select a payment method");
             return;
         }
 
-        // Set the selected payment method
         selectedPaymentMethod.value = selected.value;
 
         modalOverlay.classList.remove("hidden");
@@ -207,12 +335,10 @@
     });
 
     document.getElementById("qrisPaidBtn").addEventListener("click", function() {
-        // Submit the form to create the order
         paymentForm.submit();
     });
 
     document.getElementById("vaPaidBtn").addEventListener("click", function() {
-        // Submit the form to create the order
         paymentForm.submit();
     });
 
@@ -234,10 +360,22 @@
         }
     });
 
+    // Close address modal when clicking outside
+    addressModal.addEventListener("click", function (e) {
+        if (e.target.id === "addressModal") {
+            closeAddressModal();
+        }
+    });
+
     // Add keyboard support
     document.addEventListener("keydown", function(e) {
-        if (e.key === "Escape" && !modalOverlay.classList.contains("hidden")) {
-            closeModalHandler();
+        if (e.key === "Escape") {
+            if (!modalOverlay.classList.contains("hidden")) {
+                closeModalHandler();
+            }
+            if (!addressModal.classList.contains("hidden")) {
+                closeAddressModal();
+            }
         }
     });
 </script>

@@ -94,16 +94,14 @@
 
 <script>
 function openPopup() {
-    fetch('/csrf-token')
-        .then(response => response.json())
-        .then(data => {
-            document.querySelector('input[name="_token"]').value = data.csrf_token;
-        });
-
     document.getElementById('popupTitle').innerText = 'New Address';
     document.getElementById('formMethod').value = 'POST';
     document.getElementById('addressForm').action = '{{ route('user.address.store') }}';
-    document.querySelectorAll('#addressForm input').forEach(el => el.value = '');
+    document.querySelectorAll('#addressForm input').forEach(el => {
+        if (el.name !== '_token' && el.name !== '_method') {
+            el.value = '';
+        }
+    });
     document.getElementById('addressPopup').classList.remove('hidden');
 }
 
