@@ -66,6 +66,7 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
 
     // Custom Orders
     Route::get('/custom', [UserController::class, 'custom'])->name('custom');
+    Route::get('/custom/{id}', [UserController::class, 'custom'])->name('custom');
 });
 
 // Cart Routes (umum)
