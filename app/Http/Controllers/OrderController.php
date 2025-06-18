@@ -73,7 +73,7 @@ class OrderController extends Controller
         // Create order
         $order = Order::create([
             'user_id' => Auth::id(),
-            'status' => 'Pending Payment',
+            'status' => 'In Packing',
             'order_date' => now(),
             'total_price' => $finalTotal,
             'shipping_cost' => $shippingCost,
@@ -102,7 +102,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $orderId)
     {
         $request->validate([
-            'status' => 'required|in:Pending Payment,In Packing,Shipped,Delivered,Cancelled'
+            'status' => 'required|in:In Packing,Delivered,Finished,Cancelled'
         ]);
 
         $order = Order::findOrFail($orderId);

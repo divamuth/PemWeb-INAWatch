@@ -76,8 +76,9 @@
         <div class="flex items-center gap-6">
             <span class="text-md text-gray-700">Total (<span id="selected-count">0</span> product{{ count(session('cart')) > 1 ? 's' : '' }}):
                 <strong id="selected-total">Rp 0</strong></span>
-            <form action="{{ route('user.checkout') }}" method="POST" id="checkout-form">
+            <form action="{{ route('checkout.proceed') }}" method="POST" id="checkout-form">
                 @csrf
+                <!-- Hidden inputs untuk item yang dipilih akan ditambahkan di sini via JavaScript -->
                 <button type="submit" class="bg-black text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-800">
                     Checkout
                 </button>
@@ -130,13 +131,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add selected items to form submission
+    // Handle form submission - add selected items as hidden inputs
     checkoutForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default submission
+        
+        // Clear any existing hidden inputs for selected items
+        const existingHiddenInputs = checkoutForm.querySelectorAll('input[name="selected_items[]"]');
+        existingHiddenInputs.forEach(input => input.remove());
+        
+        // Get selected items
+        const selectedItems = [];
         itemCheckboxes.forEach(checkbox => {
-            if (!checkbox.checked) {
-                checkbox.disabled = true;
+            if (checkbox.checked) {
+                selectedItems.push(checkbox.value);
+                
+                // Create hidden input for each selected item
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'selected_items[]';
+                hiddenInput.value = checkbox.value;
+                checkoutForm.appendChild(hiddenInput);
             }
         });
+        
+        // Check if any items are selected
+        if (selectedItems.length === 0) {
+            alert('Please select at least one item to checkout.');
+            return;
+        }
+        
+        // Submit the form
+        checkoutForm.submit();
     });
 
     // Initial update

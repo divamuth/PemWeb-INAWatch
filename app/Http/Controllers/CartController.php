@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\Address; // Pastikan model Address sudah ada
+use App\Models\Address;
 
 class CartController extends Controller
 {
@@ -85,13 +85,12 @@ class CartController extends Controller
             }
         }
 
-        return view('user.payment'); // atau sesuaikan dengan nama view payment Anda
+        return view('user.payment');
     }
 
-    // Method untuk mendapatkan list address dalam format JSON
     public function getAddressesList()
     {
-        $addresses = auth()->user()->addresses; // Sesuaikan dengan relasi di model User
+        $addresses = auth()->user()->addresses;
         
         return response()->json([
             'success' => true,
@@ -99,14 +98,12 @@ class CartController extends Controller
         ]);
     }
 
-    // Method untuk menyimpan address yang dipilih ke session
     public function selectCheckoutAddress(Request $request)
     {
         $request->validate([
             'address_id' => 'required|exists:addresses,id'
         ]);
 
-        // Cari address berdasarkan user yang login dan address_id
         $address = auth()->user()->addresses()->find($request->address_id);
         
         if (!$address) {
@@ -116,7 +113,6 @@ class CartController extends Controller
             ], 404);
         }
 
-        // Simpan address yang dipilih ke session
         session([
             'selected_address' => [
                 'id' => $address->id,
@@ -137,32 +133,61 @@ class CartController extends Controller
         ]);
     }
 
-    // Method untuk proses checkout ke payment
     public function proceedToCheckout(Request $request)
-    {
-        $cart = session()->get('cart', []);
-        
-        if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
-        }
+{
+    // Log input untuk debugging
+    \Log::info('Received selected_items:', $request->input('selected_items', []));
 
-        // Hitung total
-        $subtotal = 0;
-        foreach ($cart as $item) {
-            $subtotal += $item['price'] * $item['quantity'];
-        }
-        
-        $shipping = 17000; // atau sesuaikan dengan logika shipping Anda
-        $total = $subtotal + $shipping;
+    // Validasi input selected_items
+    $request->validate([
+        'selected_items' => 'required|array|min:1',
+        'selected_items.*' => 'exists:products,id'
+    ], [
+        'selected_items.required' => 'Please select at least one item to checkout.',
+        'selected_items.min' => 'Please select at least one item to checkout.',
+        'selected_items.*.exists' => 'One or more selected items are invalid.'
+    ]);
 
-        // Simpan data checkout ke session
-        session([
-            'checkout_cart' => $cart,
-            'checkout_subtotal' => $subtotal,
-            'checkout_shipping' => $shipping,
-            'checkout_total' => $total
-        ]);
+    $cart = session()->get('cart', []);
+    $selectedItems = $request->input('selected_items', []);
 
-        return redirect()->route('cart.checkout');
+    // Jika cart kosong
+    if (empty($cart)) {
+        \Log::info('Cart is empty');
+        return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
     }
+
+    // Filter hanya item yang dipilih
+    $checkoutCart = [];
+    $subtotal = 0;
+
+    foreach ($selectedItems as $id) {
+        if (isset($cart[$id])) {
+            $checkoutCart[$id] = $cart[$id];
+            $subtotal += $cart[$id]['price'] * $cart[$id]['quantity'];
+        }
+    }
+
+    // Jika tidak ada item yang valid dipilih
+    if (empty($checkoutCart)) {
+        \Log::info('No valid items selected for checkout');
+        return redirect()->route('cart.index')->with('error', 'No valid items selected for checkout.');
+    }
+
+    // Hitung total dengan biaya pengiriman
+    $shipping = 17000; // Sesuaikan dengan logika pengiriman
+    $total = $subtotal + $shipping;
+
+    // Simpan data checkout ke session
+    session([
+        'checkout_cart' => $checkoutCart,
+        'checkout_subtotal' => $subtotal,
+        'checkout_shipping' => $shipping,
+        'checkout_total' => $total
+    ]);
+
+    return redirect()->route('checkout.page');
+}
+
+    
 }
