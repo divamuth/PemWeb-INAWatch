@@ -88,6 +88,8 @@ Route::prefix('cart')->name('cart.')->group(function () {
     });
 });
 
+Route::get('/user/order/filter', [OrderController::class, 'filter'])->name('user.orders.filter');
+
 // Checkout Routes (umum)
 Route::prefix('checkout')->name('checkout.')->middleware('auth')->group(function () {
     Route::get('/', [CartController::class, 'checkout'])->name('page');

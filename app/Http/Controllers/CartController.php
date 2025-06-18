@@ -42,7 +42,7 @@ class CartController extends Controller
                 'product_id' => $product->id,
                 'product_name' => $product->product_name,
                 'price' => $product->price,
-                'image' => $product->image,
+                'image' => $product->image, // Pastikan ini ada
                 'quantity' => $quantity,
                 'selected_strap' => $selectedStrap,
                 'stock' => $product->stock

@@ -84,12 +84,13 @@ class OrderController extends Controller
         foreach ($cart as $cartKey => $item) {
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $item['product_id'], // Gunakan product_id dari item, bukan cart key
+                'product_id' => $item['product_id'],
                 'product_name' => $item['product_name'],
                 'price' => $item['price'],
                 'quantity' => $item['quantity'],
                 'total_price' => $item['price'] * $item['quantity'],
-                'selected_strap' => $item['selected_strap'] ?? null, // Tambahan: simpan info strap
+                'selected_strap' => $item['selected_strap'] ?? null,
+                'image' => $item['image'] // Simpan gambar produk
             ]);
         }
 
@@ -128,5 +129,34 @@ class OrderController extends Controller
         $order->update(['status' => 'Cancelled']);
 
         return redirect()->back()->with('success', 'Order cancelled successfully.');
+    }
+
+   public function filter(Request $request)
+    {
+        try {
+            $status = $request->input('status', 'all');
+            
+            $orders = Order::with(['items.product'])
+                        ->where('user_id', auth()->id())
+                        ->when($status !== 'all', function($query) use ($status) {
+                                return $query->whereRaw('LOWER(status) = ?', [strtolower($status)]);
+                            })
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+            // Log after variables are defined
+            \Log::info('Filter query', ['status' => $status, 'orders_count' => $orders->count()]);
+
+            return response()->json([
+                'html' => view('user.orders-list', compact('orders'))->render(),
+                'debug' => ['status' => $status, 'count' => $orders->count()]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Filter error', ['error' => $e->getMessage()]);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
