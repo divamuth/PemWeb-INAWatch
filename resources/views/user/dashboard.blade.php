@@ -36,32 +36,26 @@
     @else
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach ($products as $product)
-                <div class="bg-white rounded-[20px] shadow-md w-[290px] h-[428px] overflow-hidden flex flex-col">
-                <div class="w-full aspect-square overflow-hidden rounded-t-[20px]">
-                    <img src="{{ asset($product->image) }}" alt="{{ $product->product_name }}"
-                        class="w-full h-full object-cover">
-                </div>
+                <a href="{{ route('user.custom', ['id' => $product->id]) }}" class="hover:brightness-95 transition">
+                    <div class="bg-white rounded-[20px] shadow-md w-[290px] h-[428px] overflow-hidden flex flex-col">
+                        <div class="w-full aspect-square overflow-hidden rounded-t-[20px]">
+                            <img src="{{ asset($product->image) }}" alt="{{ $product->product_name }}"
+                                class="w-full h-full object-cover">
+                        </div>
 
-                <div class="p-4 flex-1 flex flex-col">
-                    <h3 class="text-[17px] font-semibold text-black mb-2 text-left">
-                        {{ $product->product_name }}
-                    </h3>
-                    <span class="text-[17px] text-red-500 font-bold text-left">
-                        Rp{{ number_format($product->price, 0, ',', '.') }}
-                    </span>
-                    <span class="text-[14px] text-gray-600 text-right">
-                        {{ $product->sold ?? 0 }} sold
-                    </span>
-
-                    <form action="{{ route('cart.add', $product->id) }}" method="POST" class="mt-3 self-end">
-                        @csrf
-                        <button type="submit"
-                            class="w-9 h-9 rounded-full bg-[#AEC6CF] text-white text-xl leading-none hover:brightness-110 flex items-center justify-center shadow-md">
-                            +
-                        </button>
-                    </form>
-                </div>
-            </div>
+                        <div class="p-4 flex-1 flex flex-col">
+                            <h3 class="text-[17px] font-semibold text-black mb-2 text-left">
+                                {{ $product->product_name }}
+                            </h3>
+                            <span class="text-[17px] text-red-500 font-bold text-left">
+                                Rp{{ number_format($product->price, 0, ',', '.') }}
+                            </span>
+                            <span class="text-[14px] text-gray-600 text-right">
+                                {{ $product->sold ?? 0 }} sold
+                            </span>
+                        </div>
+                    </div>
+                </a>
             @endforeach
         </div>
     @endif

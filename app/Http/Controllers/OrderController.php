@@ -80,15 +80,16 @@ class OrderController extends Controller
             'subtotal' => $totalPrice,
         ]);
 
-        // Create order items
-        foreach ($cart as $id => $item) {
+        // Create order items - FIXED VERSION
+        foreach ($cart as $cartKey => $item) {
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $id,
+                'product_id' => $item['product_id'], // Gunakan product_id dari item, bukan cart key
                 'product_name' => $item['product_name'],
                 'price' => $item['price'],
                 'quantity' => $item['quantity'],
                 'total_price' => $item['price'] * $item['quantity'],
+                'selected_strap' => $item['selected_strap'] ?? null, // Tambahan: simpan info strap
             ]);
         }
 

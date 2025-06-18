@@ -62,9 +62,14 @@ class UserController extends Controller
         return view('user.cart');
     }
 
-    public function custom(Request $request)
+    public function custom($id = null)
     {
-        return view('user.custom');
+        if ($id) {
+            $product = Product::findOrFail($id);
+            return view('user.custom', compact('product'));
+        } else {
+            return redirect()->route('user.dashboard')->with('error', 'Product not found');
+        }
     }
 
     public function profile(Request $request)
