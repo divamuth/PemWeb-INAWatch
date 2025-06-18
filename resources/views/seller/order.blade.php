@@ -10,278 +10,271 @@
     </div>
 </div>
 
-<!-- Input Section -->
-<div class="mb-6 flex justify-between items-center">
-    <!-- ID Order Input -->
-    <div class="flex items-center bg-white border border-black">
-        <label class="px-4 py-2 font-medium text-gray-700 border-r">ID Order:</label>
-        <input type="text" id="order-id-input" placeholder="Input ID Order"
-            class="px-6 py-2 border-none focus:outline-none min-w-[200px]">
-    </div>
-
-    <!-- Status Input -->
-    <div class="flex items-center bg-white border border-black">
-        <label class="px-5 py-2 font-medium text-gray-700 border-r">Status:</label>
-        <select id="status-input" class="px-4 py-2 border-none focus:outline-none min-w-[150px] bg-white">
-            <option value="">Input Status</option>
-            <option value="in_packing">In Packing</option>
-            <option value="delivered">Delivered</option>
-            <option value="finished">Finished</option>
-            <option value="cancelled">Cancelled</option>
-        </select>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex gap-10">
-        <button onclick="saveStatus()" class="px-6 py-2 bg-white text-purple-500 font-bold border border-purple-500">
-            SAVE
-        </button>
-        <button onclick="resetFilters()" class="px-6 py-2 bg-white text-black font-bold border border-black">
-            RESET
-        </button>
-    </div>
-</div>
-
 <!-- Status Tabs -->
 <div class="mb-6">
     <div class="flex justify-between border-b border-gray-300">
         @foreach(['all' => 'All', 'in_packing' => 'In Packing', 'delivered' => 'Delivered', 'finished' => 'Finished', 'cancelled' => 'Cancelled'] as $key => $label)
-            <button class="status-tab px-4 py-2 text-black font-medium transition-colors border-b-2 border-transparent"
-                    data-status="{{ $key }}" onclick="filterByStatus('{{ $key }}', event)">
+            <button class="status-tab px-4 py-2 text-black font-medium transition-colors border-b-2 border-transparent hover:text-pink-500"
+                    data-status="{{ $key }}" onclick="filterByStatus('{{ $key }}')">
                 {{ $label }}
             </button>
         @endforeach
     </div>
 </div>
 
-<!-- Orders Table -->
-<div class="bg-white rounded-lg overflow-hidden shadow-lg border-2 border-purple-200">
-    <!-- Table Header -->
-    <div class="bg-gradient-to-r from-purple-300 to-purple-400 text-white px-6 py-4">
-        <div class="grid grid-cols-12 gap-4 font-bold">
-            <div class="col-span-4">Product</div>
-            <div class="col-span-2 text-center">Total</div>
-            <div class="col-span-2 text-center">Status</div>
-            <div class="col-span-3 text-center">Delivery Number</div>
-            <div class="col-span-1 text-center">Action</div>
+<!-- Orders List -->
+<div class="space-y-6" id="orders-container">
+    @forelse ($orders as $order)
+        <div class="order-item border rounded-lg p-6 bg-gray-50 shadow-lg" data-order-id="{{ $order->id }}" data-status="{{ $order->status }}">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">Order #{{ $order->id }}</h3>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-600">
+                        {{ $order->order_date->format('d M Y, H:i') }}
+                    </span>
+                    @php
+                        $statusConfig = [
+                            'in_packing' => ['class' => 'bg-yellow-100 text-yellow-800', 'text' => 'In Packing'],
+                            'delivered' => ['class' => 'bg-green-100 text-green-800', 'text' => 'Delivered'],
+                            'finished' => ['class' => 'bg-blue-100 text-blue-800', 'text' => 'Finished'],
+                            'cancelled' => ['class' => 'bg-red-100 text-red-800', 'text' => 'Cancelled']
+                        ];
+                        $config = $statusConfig[$order->status] ?? ['class' => 'bg-gray-100 text-gray-800', 'text' => ucfirst($order->status)];
+                    @endphp
+                    <span class="order-status-badge px-3 py-1 {{ $config['class'] }} rounded-full text-sm font-medium">
+                        {{ $config['text'] }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Customer Info -->
+            @if(isset($order->customer_name))
+            <div class="bg-purple-100 px-4 py-3 rounded-lg mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-purple-300 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <span class="font-bold text-gray-800">{{ $order->customer_name }}</span>
+                </div>
+            </div>
+            @endif
+
+            <!-- Order Items Table -->
+            <div class="bg-white rounded-lg overflow-hidden border">
+                <table class="w-full">
+                    <thead class="bg-gradient-to-r from-purple-300 to-purple-400 text-white">
+                        <tr class="text-left">
+                            <th class="px-4 py-3">Product</th>
+                            <th class="px-4 py-3">Variation</th>
+                            <th class="px-4 py-3 text-center">Quantity</th>
+                            <th class="px-4 py-3 text-center">Price</th>
+                            <th class="px-4 py-3 text-center">Total</th>
+                            <th class="px-4 py-3 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($order->items as $item)
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-3 flex items-center">
+                                    <img src="{{ $item->image ? asset($item->image) : asset('images/place.png') }}"                                          alt="{{ $item->product_name }}" 
+                                         class="w-12 h-12 object-cover rounded mr-3">
+                                    <span class="font-medium">{{ $item->product_name }}</span>
+                                </td>
+                                <td class="px-4 py-3">{{ $item->product->variation ?? '-' }}</td>
+                                <td class="px-4 py-3 text-center">{{ $item->quantity }}</td>
+                                <td class="px-4 py-3 text-center">Rp{{ number_format($item->price, 0, ',', '.') }}</td>
+                                <td class="px-4 py-3 text-center font-medium">Rp{{ number_format($order->total_price, 0, ',', '.') }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="item-status-badge px-3 py-1 {{ $config['class'] }} rounded-full text-sm font-medium">
+                                        {{ $config['text'] }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Order Summary and Actions -->
+            <div class="mt-4 flex justify-between items-center">
+                <div class="text-lg">
+                    <strong>Total: Rp{{ number_format($order->total_price, 0, ',', '.') }}</strong>
+                </div>
+                <div class="flex items-center gap-3">
+                    <select class="border rounded p-2 focus:outline-none focus:ring-2 focus:ring-purple-300" 
+                            id="status-select-{{ $order->id }}">
+                        <option value="in_packing" {{ $order->status == 'in_packing' ? 'selected' : '' }}>
+                            In Packing
+                        </option>
+                        <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>
+                            Delivered
+                        </option>
+                        <option value="finished" {{ $order->status == 'finished' ? 'selected' : '' }}>
+                            Finished
+                        </option>
+                        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>
+                            Cancelled
+                        </option>
+                    </select>
+                    <button onclick="updateOrderStatus({{ $order->id }})"
+                            class="px-4 py-2 bg-[#FFB3F8] text-white rounded-full hover:bg-[#E59DDF] transition-colors font-medium"
+                            id="update-btn-{{ $order->id }}">
+                        Update Status
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <!-- Orders List -->
-    <div id="orders-container">
-        @forelse($orders as $order)
-            <div class="order-item border-b border-purple-200" data-order-id="{{ $order['id'] }}">
-                <!-- Customer Info -->
-                <div class="bg-purple-100 px-6 py-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-purple-300 rounded-full flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <span class="font-bold text-gray-800">{{ $order['customer'] }}</span>
-                        <span class="text-sm text-gray-600 ml-auto">ID Order: {{ $order['id'] }}</span>
-                        <div class="text-sm text-gray-500">{{ now()->format('d M Y, H:i') }}</div>
-                    </div>
-                </div>
-
-                <!-- Products in Order -->
-                @foreach($order['products'] as $index => $product)
-                <div class="px-6 py-4 {{ $index > 0 ? 'border-t border-gray-100' : '' }}" data-status="{{ $product['status'] }}">
-                    <div class="grid grid-cols-12 gap-4 items-center">
-                        <!-- Product Info -->
-                        <div class="col-span-4 flex items-center gap-4">
-                            <div class="w-16 h-16 bg-orange-200 rounded-lg flex items-center justify-center">
-                                <svg class="w-8 h-8 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="font-bold text-gray-800">{{ $product['name'] }}</div>
-                                <div class="text-sm text-gray-500">Variasi: {{ $product['variant'] }}</div>
-                                <div class="text-sm text-gray-400">{{ $product['payment_method'] }}</div>
-                            </div>
-                        </div>
-
-                        <!-- Price -->
-                        <div class="col-span-2 text-center">
-                            <div class="font-bold text-lg">Rp{{ number_format($product['price'], 0, ',', '.') }}</div>
-                            <div class="text-sm text-gray-500">X{{ $product['quantity'] }}</div>
-                        </div>
-
-                        <!-- Status -->
-                        <div class="col-span-2 text-center">
-                            @php
-                                $statusConfig = [
-                                    'in_packing' => ['class' => 'bg-yellow-100 text-yellow-800', 'text' => 'In Packing'],
-                                    'delivered' => ['class' => 'bg-green-100 text-green-800', 'text' => 'Delivered'],
-                                    'finished' => ['class' => 'bg-blue-100 text-blue-800', 'text' => 'Finished'],
-                                    'cancelled' => ['class' => 'bg-red-100 text-red-800', 'text' => 'Cancelled']
-                                ];
-                                $config = $statusConfig[$product['status']] ?? ['class' => 'bg-gray-100 text-gray-800', 'text' => ucfirst($product['status'])];
-                            @endphp
-                            <span class="px-3 py-1 {{ $config['class'] }} rounded-full text-sm font-medium">
-                                {{ $config['text'] }}
-                            </span>
-                        </div>
-
-                        <!-- Delivery Number -->
-                        <div class="col-span-3 text-center">
-                            <div class="font-mono text-sm text-gray-700">{{ $product['delivery_number'] }}</div>
-                        </div>
-
-                        <!-- Action -->
-                        <div class="col-span-1 text-center">
-                            <div class="relative">
-                                <button onclick="toggleDropdown('{{ $order['id'] }}-{{ $index }}')"
-                                        class="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                    </svg>
-                                </button>
-                                <div id="dropdown-{{ $order['id'] }}-{{ $index }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
-                                    <div class="py-1">
-                                        @if($product['status'] === 'in_packing')
-                                        <button onclick="updateStatus('{{ $order['id'] }}', '{{ $index }}', 'delivered')"
-                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Mark as Delivered
-                                        </button>
-                                        @endif
-                                        @if($product['status'] === 'delivered')
-                                        <button onclick="updateStatus('{{ $order['id'] }}', '{{ $index }}', 'finished')"
-                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Mark as Finished
-                                        </button>
-                                        @endif
-                                        <button onclick="viewDetails('{{ $order['id'] }}')"
-                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        @empty
-            <div class="p-12 text-center text-gray-500">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <p class="text-lg font-medium">Tidak ada pesanan</p>
-                <p>Pesanan akan muncul di sini ketika ada pelanggan yang melakukan pemesanan</p>
-            </div>
-        @endforelse
-    </div>
+    @empty
+        <div class="text-center py-12 bg-white rounded-lg shadow-lg" id="empty-state">
+            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-lg font-medium text-gray-600">Tidak ada pesanan</p>
+            <p class="text-gray-500">Pesanan akan muncul di sini ketika ada pelanggan yang melakukan pemesanan</p>
+        </div>
+    @endforelse
 </div>
 @endsection
 
 @push('scripts')
 <script>
-    function filterByStatus(status, event) {
-        document.querySelectorAll('.status-tab').forEach(btn => {
-            btn.classList.remove('text-pink-500', 'border-pink-500');
-            btn.classList.add('text-black', 'border-transparent');
-        });
+console.log('Script loaded');
 
-        event.target.classList.remove('text-black', 'border-transparent');
-        event.target.classList.add('text-pink-500', 'border-pink-500');
-
-        document.querySelectorAll('.order-item').forEach(order => {
-            const products = order.querySelectorAll('[data-status]');
-            let visible = status === 'all' || [...products].some(p => p.dataset.status === status);
-            order.style.display = visible ? 'block' : 'none';
-        });
+// Filter function
+function filterByStatus(status) {
+    console.log('Filtering by status:', status);
+    
+    // Update tab appearance
+    var tabs = document.querySelectorAll('.status-tab');
+    tabs.forEach(function(tab) {
+        tab.classList.remove('text-pink-500', 'border-pink-500');
+        tab.classList.add('text-black', 'border-transparent');
+    });
+    
+    var activeTab = document.querySelector('[data-status="' + status + '"]');
+    if (activeTab) {
+        activeTab.classList.remove('text-black', 'border-transparent');
+        activeTab.classList.add('text-pink-500', 'border-pink-500');
     }
-
-    function saveStatus() {
-        const orderId = document.getElementById('order-id-input').value;
-        const newStatus = document.getElementById('status-input').value;
-
-        if (!orderId || !newStatus) {
-            alert('Please enter an Order ID and select a Status.');
-            return;
-        }
-
-        fetch('/update-order-status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ orderId, productIndex: 0, status: newStatus })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                alert('Status updated.');
-                location.reload();
-            } else {
-                alert('Update failed: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            alert('Error occurred.');
-        });
-    }
-
-    function resetFilters() {
-        document.getElementById('order-id-input').value = '';
-        document.getElementById('status-input').value = '';
-        filterByStatus('all', { target: document.querySelector('[data-status="all"]') });
-    }
-
-    function toggleDropdown(id) {
-        const dropdown = document.getElementById(`dropdown-${id}`);
-        dropdown.classList.toggle('hidden');
-
-        document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
-            if (d.id !== `dropdown-${id}`) {
-                d.classList.add('hidden');
-            }
-        });
-    }
-
-    function updateStatus(orderId, productIndex, newStatus) {
-        fetch('/update-order-status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ orderId, productIndex, status: newStatus })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                alert(`Status updated to: ${newStatus}`);
-                location.reload();
-            } else {
-                alert('Update failed: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            alert('Error updating status');
-        });
-
-        document.getElementById(`dropdown-${orderId}-${productIndex}`).classList.add('hidden');
-    }
-
-    function viewDetails(orderId) {
-        console.log(`Viewing details for order: ${orderId}`);
-        alert(`Viewing details for order: ${orderId}`);
-    }
-
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('.relative')) {
-            document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-                dropdown.classList.add('hidden');
-            });
+    
+    // Filter orders
+    var orders = document.querySelectorAll('.order-item');
+    var visibleCount = 0;
+    
+    orders.forEach(function(order) {
+        var orderStatus = order.getAttribute('data-status');
+        if (status === 'all' || orderStatus === status) {
+            order.style.display = 'block';
+            visibleCount++;
+        } else {
+            order.style.display = 'none';
         }
     });
+    
+    console.log('Visible orders:', visibleCount);
+}
+
+// Update status function
+function updateOrderStatus(orderId) {
+    console.log('Updating order status for ID:', orderId);
+    
+    var selectElement = document.getElementById('status-select-' + orderId);
+    var button = document.getElementById('update-btn-' + orderId);
+    var newStatus = selectElement.value;
+    
+    console.log('New status:', newStatus);
+    
+    // Show loading
+    button.textContent = 'Updating...';
+    button.disabled = true;
+    
+    // Make AJAX request
+    fetch('/update-order-status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            orderId: orderId,
+            status: newStatus
+        })
+    })
+    .then(function(response) {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(function(data) {
+        console.log('Response data:', data);
+        
+        if (data.success) {
+            // Update the order status in DOM
+            updateOrderStatusInDOM(orderId, newStatus);
+            alert('Status berhasil diupdate!');
+        } else {
+            throw new Error(data.message || 'Update gagal');
+        }
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+    })
+    .finally(function() {
+        // Reset button
+        button.textContent = 'Update Status';
+        button.disabled = false;
+    });
+}
+
+function updateOrderStatusInDOM(orderId, newStatus) {
+    console.log('Updating DOM for order:', orderId, 'status:', newStatus);
+    
+    var orderElement = document.querySelector('[data-order-id="' + orderId + '"]');
+    if (!orderElement) {
+        console.error('Order element not found');
+        return;
+    }
+    
+    // Update data attribute
+    orderElement.setAttribute('data-status', newStatus);
+    
+    // Define status configs
+    var statusConfigs = {
+        'in_packing': { class: 'bg-yellow-100 text-yellow-800', text: 'In Packing' },
+        'delivered': { class: 'bg-green-100 text-green-800', text: 'Delivered' },
+        'finished': { class: 'bg-blue-100 text-blue-800', text: 'Finished' },
+        'cancelled': { class: 'bg-red-100 text-red-800', text: 'Cancelled' }
+    };
+    
+    var config = statusConfigs[newStatus] || { class: 'bg-gray-100 text-gray-800', text: newStatus };
+    
+    // Update header badge
+    var headerBadge = orderElement.querySelector('.order-status-badge');
+    if (headerBadge) {
+        headerBadge.className = 'order-status-badge px-3 py-1 ' + config.class + ' rounded-full text-sm font-medium';
+        headerBadge.textContent = config.text;
+    }
+    
+    // Update all item badges
+    var itemBadges = orderElement.querySelectorAll('.item-status-badge');
+    itemBadges.forEach(function(badge) {
+        badge.className = 'item-status-badge px-3 py-1 ' + config.class + ' rounded-full text-sm font-medium';
+        badge.textContent = config.text;
+    });
+    
+    console.log('DOM updated successfully');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing...');
+    
+    // Set "All" tab as active by default
+    filterByStatus('all');
+    
+    console.log('Initialization complete');
+});
 </script>
 @endpush
