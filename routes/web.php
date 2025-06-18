@@ -109,6 +109,12 @@ Route::prefix('seller')->name('seller.')->group(function () {
     Route::post('/profile', [StoreController::class, 'update'])->name('profile.update');
 });
 
+// Route untuk ProductControllerAdd commentMore actions
+Route::get('/seller/stock/{id}', [ProductController::class, 'show'])->name('stock.show');
+Route::put('/seller/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
+Route::post('/seller/stock', [SellerController::class, 'store'])->name('stock.store');
+Route::delete('/seller/stock/{id}', [ProductController::class, 'destroy'])->name('stock.destroy');
+
 // API Routes
 Route::prefix('api')->name('api.')->group(function () {
     Route::get('/order-stats', [SellerController::class, 'getOrderStats'])->name('order_stats');
