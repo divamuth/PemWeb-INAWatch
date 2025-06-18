@@ -12,22 +12,36 @@ class UserProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
+
+        if (!$user->profil()->exists()) {
+        $user->profil()->create([
+            'user_id'=> $user->id,
+            'name' => '',
+            'phone' => '',
+            'gender' => '',
+            'birthdate' => null,
+            'image' => null,
+        ]);
+    }
+
         $profil = $user->profil;
 
         return view('user.profile', compact('user', 'profil'));
     }
 
+
     public function update(Request $request)
     {
         $user = Auth::user();
 
-        // Tangani upload gambar duluan
+        // Tangani upload gambar
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/profiles'), $imageName);
         } else {
-            $imageName = $user->profil->image ?? null;
+            // GUNAKAN optional() di sini
+            $imageName = optional($user->profil)->image;
         }
 
         // Validasi input
@@ -40,13 +54,13 @@ class UserProfileController extends Controller
             'birthdate' => 'nullable|date',
         ]);
 
-        // Simpan ke tabel `users`
+        // Update tabel users
         $user->update([
             'name' => $request->username,
             'email' => $request->email,
         ]);
 
-        // Simpan ke tabel `profils`
+        // Update atau buat profil (kalau belum ada)
         $user->profil()->updateOrCreate([], [
             'name' => $request->name,
             'phone' => $request->phone,
@@ -57,4 +71,5 @@ class UserProfileController extends Controller
 
         return redirect()->back()->with('success', 'Profile updated!');
     }
+
 }

@@ -29,7 +29,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/user/address/{address}', [AddressController::class, 'destroy'])->name('user.address.destroy');
 });
 
-Route::get('/user/address', [AddressController::class, 'index'])->name('user.address');
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+})->middleware('web');
+
 Route::get('/user/order', [UserController::class, 'order'])->name('user.order');
 Route::get('/user/chatuser', [UserController::class, 'chatuser'])->name('user.chatuser');
 Route::get('/user/custom', [UserController::class, 'custom'])->name('user.custom');
