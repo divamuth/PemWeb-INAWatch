@@ -31,7 +31,7 @@
             <div class="grid grid-cols-[0.5fr_2fr_1fr_1fr_1fr_0.5fr] gap-4 items-center py-4 text-center">
                 <div><input type="checkbox" class="w-4 h-4"></div>
                 <div class="flex items-center text-left gap-3">
-                    <img src="{{ asset('storage/' . $item['image']) }}" class="w-20 h-20 rounded-md object-cover">
+                    <img src="{{ asset( $item['image']) }}" class="w-20 h-20 rounded-md object-cover">
                     <div>
                         <p class="font-semibold text-gray-800">{{ $item['product_name'] }}</p>
                     </div>
@@ -76,7 +76,7 @@
         <div class="flex items-center gap-6">
             <span class="text-md text-gray-700">Total ({{ count(session('cart')) }} product{{ count(session('cart')) > 1 ? 's' : '' }}):
                 <strong>Rp {{ number_format($total, 0, ',', '.') }}</strong></span>
-            <form action="{{ route('user.order') }}" method="POST">
+            <form action="{{ route('user.checkout') }}" method="POST">
                 @csrf
                 <button type="submit" class="bg-black text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-800">
                     Checkout

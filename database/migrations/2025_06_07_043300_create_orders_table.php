@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
@@ -16,14 +13,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('status')->default('In Packing');
             $table->dateTime('order_date');
-            $table->decimal('total_price', 10, 2);
+            $table->decimal('total_price', 10, 2)->nullable();
+            $table->decimal('shipping_cost', 10, 2)->default(17000);
+            $table->decimal('subtotal', 10, 2)->nullable();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('orders');

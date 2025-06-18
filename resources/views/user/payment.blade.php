@@ -31,31 +31,37 @@
                 <div class="bg-white p-6 shadow-lg" style="border-radius: 30px;">
                     <h3 class="text-2xl font-bold mb-6" style="color: #a3bef6;">ORDER</h3>
                     <div class="space-y-6">
-                        @for ($i = 0; $i < 2; $i++)
+                        @php
+                            $checkoutCart = session('checkout_cart', []);
+                            $subtotal = session('checkout_subtotal', 0);
+                            $shipping = session('checkout_shipping', 17000);
+                            $total = session('checkout_total', 0);
+                        @endphp
+                        
+                        @forelse($checkoutCart as $id => $item)
                         <div class="flex items-start gap-4">
                             <div class="flex-shrink-0">
-                                <img src="{{ asset('images/jam.png') }}" alt="Watch" class="w-16 h-16 object-cover rounded-lg">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['product_name'] }}" class="w-16 h-16 object-cover rounded-lg">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-semibold text-gray-900 mb-2 leading-tight">
-                                    INA Watch Jam Tangan Kayu Jati Seri Rara Nggiel
+                                    {{ $item['product_name'] }}
                                 </h4>
-                                <p class="text-sm text-gray-500 mb-3">Variasi: L. Abu Polos</p>
+                                <p class="text-sm text-gray-500 mb-3">Quantity: {{ $item['quantity'] }}</p>
                             </div>
-                            <div class="text-right flex flex-col items-end gap-2">
-                                <p class="text-lg font-bold text-gray-900 item-price" data-base-price="214900" data-index="{{ $i }}">Rp214.900</p>
-                                <div class="flex items-center gap-2">
-                                    <button class="quantity-btn w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors" data-action="decrease" data-index="{{ $i }}">
-                                        −
-                                    </button>
-                                    <span class="quantity-display font-medium text-gray-900 min-w-[20px] text-center" data-index="{{ $i }}">1</span>
-                                    <button class="quantity-btn w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors" data-action="increase" data-index="{{ $i }}">
-                                        +
-                                    </button>
-                                </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-gray-900">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</p>
+                                <p class="text-sm text-gray-500">{{ $item['quantity'] }} x Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
                             </div>
                         </div>
-                        @endfor
+                        @empty
+                        <div class="text-center py-8">
+                            <p class="text-gray-500">No items in checkout.</p>
+                            <a href="{{ route('user.cart') }}" class="mt-4 inline-block bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600">
+                                Go to Cart
+                            </a>
+                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -95,22 +101,27 @@
                     <div class="space-y-4 mb-8">
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">Subtotal</span>
-                            <span class="font-semibold text-gray-900" id="subtotal">Rp429.800</span>
+                            <span class="font-semibold text-gray-900">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">Shipping</span>
-                            <span class="font-semibold text-gray-900">Rp17.000</span>
+                            <span class="font-semibold text-gray-900">Rp {{ number_format($shipping, 0, ',', '.') }}</span>
                         </div>
                         <hr class="border-gray-200">
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-bold text-gray-900">Total</span>
-                            <span class="text-lg font-bold text-gray-900" id="total">Rp446.800</span>
+                            <span class="text-lg font-bold text-gray-900">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
-                    <button id="buyNow" class="w-full bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white py-4 rounded-2xl text-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] shadow-lg">
-                        Buy Now
-                    </button>
+                    <!-- Update the Buy Now button to actually create the order -->
+                    <form action="{{ route('user.orders.store') }}" method="POST" id="paymentForm">
+                        @csrf
+                        <input type="hidden" name="payment_method" id="selectedPaymentMethod">
+                        <button type="button" id="buyNow" class="w-full bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white py-4 rounded-2xl text-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] shadow-lg">
+                            Buy Now
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -170,55 +181,8 @@
     const vaContent = document.getElementById("vaContent");
     const successContent = document.getElementById("successContent");
     const closeModal = document.getElementById("closeModal");
-
-    // Quantity functionality
-    let quantities = [1, 1]; // Initialize quantities for each item
-    const basePrice = 214900; // Base price per item
-    const shippingPrice = 17000; // Shipping cost
-
-    function formatRupiah(amount) {
-        return 'Rp' + amount.toLocaleString('id-ID');
-    }
-
-    function updatePricing() {
-        // Calculate total for each item and overall subtotal
-        let subtotal = 0;
-        
-        quantities.forEach((qty, index) => {
-            const itemTotal = basePrice * qty;
-            subtotal += itemTotal;
-            
-            // Update individual item price display
-            const priceElement = document.querySelector(`.item-price[data-index="${index}"]`);
-            if (priceElement) {
-                priceElement.textContent = formatRupiah(itemTotal);
-            }
-        });
-
-        // Update subtotal and total
-        document.getElementById('subtotal').textContent = formatRupiah(subtotal);
-        document.getElementById('total').textContent = formatRupiah(subtotal + shippingPrice);
-    }
-
-    document.querySelectorAll('.quantity-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const action = this.getAttribute('data-action');
-            const index = parseInt(this.getAttribute('data-index'));
-            const display = document.querySelector(`.quantity-display[data-index="${index}"]`);
-            
-            if (action === 'increase') {
-                quantities[index]++;
-            } else if (action === 'decrease' && quantities[index] > 1) {
-                quantities[index]--;
-            }
-            
-            display.textContent = quantities[index];
-            updatePricing();
-        });
-    });
-
-    // Initialize pricing on page load
-    updatePricing();
+    const paymentForm = document.getElementById("paymentForm");
+    const selectedPaymentMethod = document.getElementById("selectedPaymentMethod");
 
     document.getElementById("buyNow").addEventListener("click", function () {
         let selected = document.querySelector('input[name="payment"]:checked');
@@ -226,6 +190,9 @@
             alert("Please select a payment method");
             return;
         }
+
+        // Set the selected payment method
+        selectedPaymentMethod.value = selected.value;
 
         modalOverlay.classList.remove("hidden");
         hideAllModalContent();
@@ -237,22 +204,20 @@
         }
     });
 
-    document.getElementById("qrisPaidBtn").addEventListener("click", showSuccess);
-    document.getElementById("vaPaidBtn").addEventListener("click", showSuccess);
+    document.getElementById("qrisPaidBtn").addEventListener("click", function() {
+        // Submit the form to create the order
+        paymentForm.submit();
+    });
+
+    document.getElementById("vaPaidBtn").addEventListener("click", function() {
+        // Submit the form to create the order
+        paymentForm.submit();
+    });
 
     function hideAllModalContent() {
         qrisContent.classList.add("hidden");
         vaContent.classList.add("hidden");
         successContent.classList.add("hidden");
-    }
-
-    function showSuccess() {
-        hideAllModalContent();
-        successContent.classList.remove("hidden");
-
-        setTimeout(() => {
-            modalOverlay.classList.add("hidden");
-        }, 3000);
     }
 
     function closeModalHandler() {
