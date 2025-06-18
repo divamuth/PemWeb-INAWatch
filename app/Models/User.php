@@ -52,7 +52,14 @@ class User extends Authenticatable
 
     public function profil()
     {
-        return $this->hasOne(Profil::class);
+        return $this->hasOne(Profil::class)
+                    ->withDefault([   
+                        'name'      => '',
+                        'phone'     => '',
+                        'gender'    => '',
+                        'birthdate' => null,
+                        'image'     => null,
+                    ]);
     }
 
     public function addresses()

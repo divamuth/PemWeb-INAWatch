@@ -15,12 +15,19 @@ Route::get('/', function () {
     return redirect('/seller/dashboard');
 });
 
+// CSRF Token Route
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+})->middleware('web');
+
+// Auth routes
 Route::get('/login', [UserController::class, 'showLogin'])->name('login');
 Route::get('/register', [UserController::class, 'register'])->name('register');
 Route::post('/login', [UserController::class, 'login'])->name('login.submit');
 Route::post('/register', [UserController::class, 'store'])->name('register.submit');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
+// User Routes
 Route::prefix('user')->name('user.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
@@ -55,6 +62,7 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/custom', [UserController::class, 'custom'])->name('custom');
 });
 
+// Cart Routes
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('/add/{id}', [CartController::class, 'add'])->name('add');
     Route::get('/', [CartController::class, 'index'])->name('index');
@@ -62,6 +70,7 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::patch('/update/{id}', [CartController::class, 'update'])->name('update');
 });
 
+// Seller Routes
 Route::prefix('seller')->name('seller.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [SellerController::class, 'index'])->name('dashboard');
@@ -92,12 +101,12 @@ Route::prefix('seller')->name('seller.')->group(function () {
     Route::post('/profile', [StoreController::class, 'update'])->name('profile.update');
 });
 
+// API Routes
 Route::prefix('api')->name('api.')->group(function () {
     Route::get('/order-stats', [SellerController::class, 'getOrderStats'])->name('order_stats');
     Route::get('/stock-stats', [SellerController::class, 'getStockStats'])->name('stock_stats');
 });
 
-// Legacy user routes - redirect to new structure
 Route::get('/user/order', function () {
     return redirect()->route('user.orders');
 })->name('user.order');
@@ -106,11 +115,6 @@ Route::get('/user/chatuser', function () {
     return redirect()->route('user.chat');
 })->name('user.chatuser');
 
-Route::get('/user/address', function () {
-    return redirect()->route('user.address.index');
-})->name('user.address');
-
-// Legacy seller routes - redirect to new structure
 Route::get('/seller/chatseller', function () {
     return redirect()->route('seller.chat');
 })->name('seller.chatseller');
@@ -118,10 +122,6 @@ Route::get('/seller/chatseller', function () {
 Route::get('/seller/order', function () {
     return redirect()->route('seller.orders');
 })->name('seller.order');
-
-// Legacy product routes - maintain for now
-Route::put('/seller/stock/{id}', [ProductController::class, 'update'])->name('stock.update');
-Route::delete('/seller/stock/{id}', [ProductController::class, 'destroy'])->name('stock.destroy');
 
 // Legacy order route - redirect to new checkout
 Route::post('/order', function () {

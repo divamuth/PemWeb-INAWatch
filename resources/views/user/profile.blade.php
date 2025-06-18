@@ -117,9 +117,9 @@
                     <div class="flex flex-col items-center space-y-4">
                         <div class="w-24 h-24 bg-gray-200 rounded-full overflow-hidden">
                             @php
-                                $imagePath = $profil->image
+                                $imagePath = isset($profil) && $profil->image
                                     ? asset('uploads/profiles/' . $profil->image)
-                                    : asset('uploads/profile/profil-default.png');
+                                    : asset('uploads/profiles/profil-default.png');
                             @endphp
                             <img src="{{ $imagePath }}" alt="Profile Picture" class="w-full h-full object-cover">
                         </div>

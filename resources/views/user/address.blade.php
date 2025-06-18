@@ -31,7 +31,7 @@
                     <p class="text-gray-400">{{ strtoupper($address->district) }}, {{ strtoupper($address->city) }}, {{ strtoupper($address->province) }}, {{ $address->post }}</p>
 
                     <div class="flex justify-end space-x-2 mt-2">
-                        <button onclick="openEditPopup({{ $address }})" class="px-3 py-1 bg-yellow-400 text-white rounded-full hover:bg-yellow-500 text-sm font-bold">Edit</button>
+                        <button onclick='openEditPopup(@json($address))' class="px-3 py-1 bg-yellow-400 text-white rounded-full hover:bg-yellow-500 text-sm font-bold">Edit</button>
                         <form action="{{ route('user.address.destroy', $address->id) }}" method="POST" onsubmit="return confirm('Delete this address?')">
                             @csrf
                             @method('DELETE')
@@ -47,7 +47,7 @@
 <div id="addressPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-[#F6F6FF] rounded-[30px] w-2/3 py-8 px-16 max-h-[90vh] overflow-y-auto">
         <strong class="flex mb-4 text-xl" id="popupTitle">New Address</strong>
-        <form id="addressForm" method="POST">
+        <form id="addressForm" method="POST" action="{{ route('user.address.store') }}">
             @csrf
             <input type="hidden" name="_method" id="formMethod" value="POST">
             <div class="flex flex-col mb-2">
@@ -94,6 +94,12 @@
 
 <script>
 function openPopup() {
+    fetch('/csrf-token')
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('input[name="_token"]').value = data.csrf_token;
+        });
+
     document.getElementById('popupTitle').innerText = 'New Address';
     document.getElementById('formMethod').value = 'POST';
     document.getElementById('addressForm').action = '{{ route('user.address.store') }}';
@@ -118,6 +124,12 @@ function openEditPopup(address) {
 
 function closePopup() {
     document.getElementById('addressPopup').classList.add('hidden');
+    document.querySelectorAll('#addressForm input').forEach(el => {
+        if (el.name !== '_token' && el.name !== '_method') {
+            el.value = '';
+        }
+    });
+
 }
 </script>
 
@@ -152,5 +164,4 @@ function closePopup() {
 .btn-cancel:hover { background-color: #6b7280; transform: scale(1.05); }
 .btn-save:hover { background-color: #818cf8; transform: scale(1.05); }
 </style>
-
 @endsection
